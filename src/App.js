@@ -1,32 +1,24 @@
-import React,{useEffect,useState} from 'react';
-import ReactDOMServer from 'react-dom/server';
+import React, { useEffect, useState } from 'react';
+import { transform } from 'buble';
 
-
-function Button()
-{
-  const [idx,SetIdx] = useState(0);
-  return (
-    <div>
-      <Button type="primary" onClick={()=> SetIdx(idx+1)}>{idx}</Button>
-    </div>
-  )
-}
-
-function Frame()
-{
-  const [Src,SetSrc] = useState();
-
-  function createBlobUrl(html)
-  {
+import Editor from 'react-simple-code-editor';
+import { highlight, languages } from 'prismjs/components/prism-core';
+import '../node_modules/prismjs/components/prism-clike';
+import '../node_modules/prismjs/components/prism-javascript';
+import '../node_modules/prismjs/components/prism-markup';
+import '../node_modules/prismjs/components/prism-jsx';
+import "./style.css";
+function Frame({ code }) {
+  function createBlobUrl(html) {
     let blob = new Blob([html], {
-        type: 'text/html',
-        endings: 'native'
+      type: 'text/html',
+      endings: 'native'
     });
     return URL.createObjectURL(blob);
   }
 
-  useEffect(()=>{
-    SetSrc(createBlobUrl(`
+  return (
+    <iframe style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
     <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -37,17 +29,7 @@ function Frame()
           <script>
 
 
-          function App()
-          {
-            var ref = React.useState(0);
-            var idx = ref[0];
-            var SetIdx = ref[1];
-            return (
-              React.createElement( 'div', null,
-                React.createElement( antd.Button, { type: "primary", onClick: function (){ return SetIdx(idx+1); } }, idx)
-              )
-            )
-          }
+         ${code}
 
           window.onload = () => {
             console.log(React.createElement)
@@ -57,24 +39,44 @@ function Frame()
         </head>
         <body>
           <div id="root"></div>
-          
+
         </body>
     </html>
-    `));
-  },[])
-
-  return (
-    <iframe style={{width:'1024px', height:'768px' ,border: '1px solid black'}} src={Src}>
-
-    </iframe>
+    `)} />
   )
 }
 
 function App() {
+  const [transCode, SetTransCode] = useState('');
+  const [Code, SetCode] = useState(`
+  function App()
+  {
+    const [idx,SetIdx] = React.useState(0);
+    return (
+      <div>
+        <antd.Button type="primary" onClick={()=> SetIdx(idx+1)}>{idx}</antd.Button>
+      </div>
+    )
+  }
+  `);
+
+  function textarea_onChange(input_code) {
+    SetCode(input_code);
+  }
+
+  useEffect(() => SetTransCode(transform(Code).code),[Code]);
 
   return (
-    <div className="App">
-      <Frame />
+    <div className="App" style={{ display: 'flex' }}>
+ 
+      <Editor
+        value={Code}
+        onValueChange={textarea_onChange}
+        highlight={code => highlight(code, languages.jsx)}
+        padding={10}
+        style={{ width: '50%', height: '768px' }}
+      />
+      <Frame code={transCode} />
     </div>
   );
 }
