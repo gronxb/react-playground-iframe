@@ -59,13 +59,37 @@ function App() {
     )
   }
   `);
-
+  const ErrorComponent = (ErrorMessage) => `
+    function App()
+    {
+      return (
+        <div>
+          <antd.Alert
+          message="Error"
+          description="${ErrorMessage}"
+          type="error"
+          showIcon
+        />
+        </div>
+      )
+    }
+  `
   function textarea_onChange(input_code) {
     SetCode(input_code);
   }
 
-  useEffect(() => SetTransCode(transform(Code).code),[Code]);
-
+  useEffect(() => {
+    try{
+      
+      SetTransCode(transform(Code).code);
+    }
+    catch(e)
+    {
+      console.log(e);
+       SetTransCode(transform(ErrorComponent(e.message)).code)
+    }
+  },[Code]);
+  useEffect(() => console.log(transCode),[transCode]);
   return (
     <div className="App" style={{ display: 'flex' }}>
  
