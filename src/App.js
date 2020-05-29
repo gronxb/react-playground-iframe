@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { transform } from 'buble';
+import axios from 'axios';
 
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs/components/prism-core';
@@ -8,7 +9,7 @@ import '../node_modules/prismjs/components/prism-javascript';
 import '../node_modules/prismjs/components/prism-markup';
 import '../node_modules/prismjs/components/prism-jsx';
 import "./style.css";
-function Frame({ code }) {
+function Frame({ code ,lib}) {
   function createBlobUrl(html) {
     let blob = new Blob([html], {
       type: 'text/html',
@@ -24,7 +25,9 @@ function Frame({ code }) {
         <head>
           <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
           <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-          <script src="https://unpkg.com/antd@4.2.5/dist/antd.min.js" crossorigin></script>
+         
+          ${lib.reduce((a,b)=> 
+            `<script src="https://unpkg.com/${a}" crossorigin></script>`+'\n'+`<script src="https://unpkg.com/${b}" crossorigin></script>`)}
           <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
           <script>
 
@@ -59,48 +62,58 @@ function App() {
     )
   }
   `);
-  const ErrorComponent = (ErrorMessage) => `
-    function App()
-    {
-      return (
-        <div>
-          <antd.Alert
-          message="Error"
-          description="${ErrorMessage}"
-          type="error"
-          showIcon
-        />
-        </div>
-      )
-    }
-  `
+
+  const ErrorComponent = useCallback((ErrorMessage) => `
+  function App()
+  {
+    return (
+      <div>
+        <antd.Alert
+        message="Error"
+        description="${ErrorMessage}"
+        type="error"
+        showIcon
+      />
+      </div>
+    )
+  }
+`, []);
+
   function textarea_onChange(input_code) {
     SetCode(input_code);
   }
 
   useEffect(() => {
-    try{
-      
+    try {
       SetTransCode(transform(Code).code);
     }
-    catch(e)
-    {
-      console.log(e);
-       SetTransCode(transform(ErrorComponent(e.message)).code)
+    catch (e) {
+      SetTransCode(transform(ErrorComponent(e.message)).code)
     }
-  },[Code]);
-  useEffect(() => console.log(transCode),[transCode]);
+  }, [Code]);
+
+
   return (
-    <div className="App" style={{ display: 'flex' }}>
- 
-      <Editor
-        value={Code}
-        onValueChange={textarea_onChange}
-        highlight={code => highlight(code, languages.jsx)}
-        padding={10}
-        style={{ width: '50%', height: '768px' }}
-      />
-      <Frame code={transCode} />
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex' }}>
+
+        <Editor
+          value={Code}
+          onValueChange={textarea_onChange}
+          highlight={code => highlight(code, languages.jsx)}
+          padding={10}
+          style={{ width: '50%', height: '768px' }}
+        />
+        <Frame code={transCode}  lib={['antd','reactstrap']}/>
+
+      </div>
+      <input type="text" id="text"/>
+      <div style={{ display: 'flex' }}>
+        <button onClick={()=>{
+          let text = document.getElementById('text').value;
+          axios.get(`http://unpkg.com/${text}`).then((v) => console.log(v));
+        }}>Test</button>
+      </div>
     </div>
   );
 }
