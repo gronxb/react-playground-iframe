@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useContext, memo, useSelector, useMemo } from 'react';
 import { transform } from 'buble';
 import axios from 'axios';
-import { Treebeard } from 'react-treebeard';
-
+import 'antd/dist/antd.css';
+import { Tree } from 'antd';
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import '../node_modules/prismjs/components/prism-clike';
@@ -11,8 +11,13 @@ import '../node_modules/prismjs/components/prism-markup';
 import '../node_modules/prismjs/components/prism-jsx';
 import "./style.css";
 
+import { IFrameProvider, IFrameContext } from './IFrameProvider';
 
-function Frame({ code, lib }) {
+const { TreeNode } = Tree;
+
+const Frame = memo(function Frame({ code, lib }) {
+  const [npmData, SetNPM] = useState([]);
+
   const ref = useRef();
 
   const createBlobUrl = useCallback((html) => {
@@ -24,15 +29,42 @@ function Frame({ code, lib }) {
   }, []);
 
 
+  const IframeData = useContext(IFrameContext);
+
+  const onLoad = useCallback(() => { // ImportNPM to Tree Data
+    let npm_infos = ImportNPM(lib);
+
+    let treeData = npm_infos.map((v) => {
+
+      return {
+        title: v.name,
+        key: v.name,
+        children: Object.keys(v.module).map(m => {
+          return {
+            title: m,
+            key: v.name+'-'+m,
+          }
+        })
+      }
+    });
+    IframeData.SetData(treeData, 'PUSH');
+    console.log('treeData', treeData);
+  }, []);
+
   const ImportNPM = useCallback((lib_names) => { // Import NPM Module imported within <iframe>
     let all = Object.keys(ref.current.contentWindow);
     return all.filter((v) => lib_names.some((a) => {
       return a === v.toLowerCase();
-    })).map((v) => ref.current.contentWindow[v]);
+    })).map((v) => {
+      return {
+        name: v,
+        module: ref.current.contentWindow[v]
+      }
+    });
   }, []);
 
-  return (
-    <iframe ref={ref} onLoad={() => console.log(ImportNPM(lib))} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
+  return useMemo(() => {
+    return (<iframe ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
     <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -51,7 +83,6 @@ function Frame({ code, lib }) {
           ${code}
 
           window.onload = () => {
-            console.log(React.createElement)
             ReactDOM.render(React.createElement( App, null ), document.getElementById('root'));
           }
           </script>
@@ -62,58 +93,54 @@ function Frame({ code, lib }) {
         </body>
     </html>
     `)} />
-  )
-}
+    )
+  }, [code,lib])
+}, (prevProps, nextProps) => {
+  console.log('prevProps', prevProps);
+  console.log('nextProps', nextProps);
+});
 
-const TreeExample = () => {
-  const [data, setData] = useState({
-    name: 'root',
-    toggled: true,
-    children: [
-      {
-        name: 'parent',
-        children: [
-          { name: 'child1' },
-          { name: 'child2' }
-        ]
-      },
-      {
-        name: 'loading parent',
-        loading: true,
-        children: []
-      },
-      {
-        name: 'parent',
-        children: [
-          {
-            name: 'nested parent',
-            children: [
-              { name: 'nested child 1' },
-              { name: 'nested child 2' }
-            ]
-          }
-        ]
-      }
-    ]
-  });
-  const [cursor, setCursor] = useState(false);
 
-  const onToggle = (node, toggled) => {
-    if (cursor) {
-      cursor.active = false;
-    }
-    node.active = true;
-    if (node.children) {
-      node.toggled = toggled;
-    }
-    setCursor(node);
-    setData(Object.assign({}, data))
-  }
+
+const TreeView = () => {
+  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [checkedKeys, setCheckedKeys] = useState([]);
+  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
+  const get_data = useContext(IFrameContext).data;
+
+  const onExpand = expandedKeys => {
+    console.log('onExpand', expandedKeys); // if not set autoExpandParent to false, if children expanded, parent can not collapse.
+    // or, you can remove all expanded children keys.
+
+    setExpandedKeys(expandedKeys);
+    setAutoExpandParent(false);
+  };
+
+  const onCheck = checkedKeys => {
+    console.log('onCheck', checkedKeys);
+    setCheckedKeys(checkedKeys);
+  };
+
+  const onSelect = (selectedKeys, info) => {
+    console.log('onSelect', info);
+    setSelectedKeys(selectedKeys);
+  };
 
   return (
-    <Treebeard data={data} onToggle={onToggle} />
-  )
-}
+    <Tree
+      checkable
+      onExpand={onExpand}
+      expandedKeys={expandedKeys}
+      autoExpandParent={autoExpandParent}
+      onCheck={onCheck}
+      checkedKeys={checkedKeys}
+      onSelect={onSelect}
+      selectedKeys={selectedKeys}
+      treeData={get_data}
+    />
+  );
+};
 
 function App() {
   const [transCode, SetTransCode] = useState('');
@@ -159,32 +186,34 @@ function App() {
     }
   }, [Code]);
 
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex' }}>
-        <div style={{ width: '50%' }}>
-          <Editor
-            placeholder="Input React Code."
-            value={Code}
-            onValueChange={textarea_onChange}
-            highlight={code => highlight(code, languages.jsx)}
-            padding={10}
+    <IFrameProvider>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex' }}>
+          <div style={{ width: '50%' }}>
+            <Editor
+              placeholder="Input React Code."
+              value={Code}
+              onValueChange={textarea_onChange}
+              highlight={code => highlight(code, languages.jsx)}
+              padding={10}
 
-            className="container__editor"
-          />
+              className="container__editor"
+            />
+          </div>
+          <Frame code={transCode} lib={['antd', 'reactstrap', 'react-treebeard']} />
         </div>
-        <Frame code={transCode} lib={['antd', 'reactstrap', 'react-treebeard']} />
+        <input type="text" id="text" />
+        <div style={{ display: 'flex' }}>
+          <button onClick={() => {
+            let text = document.getElementById('text').value;
+            axios.get(`http://unpkg.com/${text}`).then((v) => console.log(v));
+          }}>Test</button>
+
+          <TreeView />
+        </div>
       </div>
-      <input type="text" id="text" />
-      <div style={{ display: 'flex' }}>
-        <button onClick={() => {
-          let text = document.getElementById('text').value;
-          axios.get(`http://unpkg.com/${text}`).then((v) => console.log(v));
-        }}>Test</button>
-        <TreeExample />
-      </div>
-    </div>
+    </IFrameProvider>
   );
 }
 
