@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { transform } from 'buble';
 import axios from 'axios';
+import { Treebeard } from 'react-treebeard';
 
 import Editor from 'react-simple-code-editor';
 import { highlight, languages } from 'prismjs/components/prism-core';
@@ -9,7 +10,9 @@ import '../node_modules/prismjs/components/prism-javascript';
 import '../node_modules/prismjs/components/prism-markup';
 import '../node_modules/prismjs/components/prism-jsx';
 import "./style.css";
-function Frame({ code ,lib}) {
+
+
+function Frame({ code, lib }) {
   function createBlobUrl(html) {
     let blob = new Blob([html], {
       type: 'text/html',
@@ -18,6 +21,7 @@ function Frame({ code ,lib}) {
     return URL.createObjectURL(blob);
   }
 
+  
   return (
     <iframe style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
     <!DOCTYPE html>
@@ -26,15 +30,23 @@ function Frame({ code ,lib}) {
           <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
           <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
          
-          ${lib.reduce((a,b)=> 
-            `<script src="https://unpkg.com/${a}" crossorigin></script>`+'\n'+`<script src="https://unpkg.com/${b}" crossorigin></script>`)}
-          <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
+          ${lib.map((v) => `<script src="https://unpkg.com/${v}" crossorigin></script>`).reduce((a, b) => a + '\n' + b)}
+
           <script>
+          
+          function IncludeLibTree(lib) {
+            let all = Object.keys(window);
+            return all.filter((v) => lib.some((a) => {
+              return a === v.toLowerCase();
+            })).map((v) => window[v]);
+            
+          }
 
-
-         ${code}
+          ${code}
 
           window.onload = () => {
+            
+            
             console.log(React.createElement)
             ReactDOM.render(React.createElement( App, null ), document.getElementById('root'));
           }
@@ -46,6 +58,56 @@ function Frame({ code ,lib}) {
         </body>
     </html>
     `)} />
+  )
+}
+
+const TreeExample = () => {
+  const [data, setData] = useState({
+    name: 'root',
+    toggled: true,
+    children: [
+      {
+        name: 'parent',
+        children: [
+          { name: 'child1' },
+          { name: 'child2' }
+        ]
+      },
+      {
+        name: 'loading parent',
+        loading: true,
+        children: []
+      },
+      {
+        name: 'parent',
+        children: [
+          {
+            name: 'nested parent',
+            children: [
+              { name: 'nested child 1' },
+              { name: 'nested child 2' }
+            ]
+          }
+        ]
+      }
+    ]
+  });
+  const [cursor, setCursor] = useState(false);
+
+  const onToggle = (node, toggled) => {
+    if (cursor) {
+      cursor.active = false;
+    }
+    node.active = true;
+    if (node.children) {
+      node.toggled = toggled;
+    }
+    setCursor(node);
+    setData(Object.assign({}, data))
+  }
+
+  return (
+    <Treebeard data={data} onToggle={onToggle} />
   )
 }
 
@@ -104,15 +166,16 @@ function App() {
           padding={10}
           style={{ width: '50%', height: '768px' }}
         />
-        <Frame code={transCode}  lib={['antd','reactstrap']}/>
+        <Frame code={transCode} lib={['antd', 'reactstrap', 'react-icons']} />
 
       </div>
-      <input type="text" id="text"/>
+      <input type="text" id="text" />
       <div style={{ display: 'flex' }}>
-        <button onClick={()=>{
+        <button onClick={() => {
           let text = document.getElementById('text').value;
           axios.get(`http://unpkg.com/${text}`).then((v) => console.log(v));
         }}>Test</button>
+        <TreeExample />
       </div>
     </div>
   );
