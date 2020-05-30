@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { transform } from 'buble';
 import axios from 'axios';
 import { Treebeard } from 'react-treebeard';
@@ -13,17 +13,26 @@ import "./style.css";
 
 
 function Frame({ code, lib }) {
-  function createBlobUrl(html) {
+  const ref = useRef();
+
+  const createBlobUrl = useCallback((html) => {
     let blob = new Blob([html], {
       type: 'text/html',
       endings: 'native'
     });
     return URL.createObjectURL(blob);
-  }
+  }, []);
 
-  
+
+  const ImportNPM = useCallback((lib_names) => { // Import NPM Module imported within <iframe>
+    let all = Object.keys(ref.current.contentWindow);
+    return all.filter((v) => lib_names.some((a) => {
+      return a === v.toLowerCase();
+    })).map((v) => ref.current.contentWindow[v]);
+  }, []);
+
   return (
-    <iframe style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
+    <iframe ref={ref} onLoad={() => console.log(ImportNPM(lib))} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
     <!DOCTYPE html>
       <html lang="en">
         <head>
@@ -37,13 +46,7 @@ function Frame({ code, lib }) {
 
           <script>
 
-          function IncludeLibTree(lib) {
-            let all = Object.keys(window);
-            return all.filter((v) => lib.some((a) => {
-              return a === v.toLowerCase();
-            })).map((v) => window[v]);
-            
-          }
+         
           
           ${code}
 
@@ -147,21 +150,29 @@ function App() {
     SetCode(input_code);
   }
 
- 
+  useEffect(() => {
+    try {
+      SetTransCode(transform(Code).code);
+    }
+    catch (e) {
+      SetTransCode(transform(ErrorComponent(e.message)).code)
+    }
+  }, [Code]);
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex'}}>
-      <div style={{width:'50%'}}>
-        <Editor
-          placeholder="Input React Code."
-          value={Code}
-          onValueChange={textarea_onChange}
-          highlight={code => highlight(code, languages.jsx)}
-          padding={10}
-          
-          className="container__editor"
-        />
+      <div style={{ display: 'flex' }}>
+        <div style={{ width: '50%' }}>
+          <Editor
+            placeholder="Input React Code."
+            value={Code}
+            onValueChange={textarea_onChange}
+            highlight={code => highlight(code, languages.jsx)}
+            padding={10}
+
+            className="container__editor"
+          />
         </div>
         <Frame code={transCode} lib={['antd', 'reactstrap', 'react-treebeard']} />
       </div>
