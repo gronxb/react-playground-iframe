@@ -31,9 +31,12 @@ function Frame({ code, lib }) {
           <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
          
           ${lib.map((v) => `<script src="https://unpkg.com/${v}" crossorigin></script>`).reduce((a, b) => a + '\n' + b)}
+          
+          <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
+
 
           <script>
-          
+
           function IncludeLibTree(lib) {
             let all = Object.keys(window);
             return all.filter((v) => lib.some((a) => {
@@ -41,12 +44,10 @@ function Frame({ code, lib }) {
             })).map((v) => window[v]);
             
           }
-
+          
           ${code}
 
           window.onload = () => {
-            
-            
             console.log(React.createElement)
             ReactDOM.render(React.createElement( App, null ), document.getElementById('root'));
           }
@@ -120,6 +121,7 @@ function App() {
     return (
       <div>
         <antd.Button type="primary" onClick={()=> SetIdx(idx+1)}>{idx}</antd.Button>
+
       </div>
     )
   }
@@ -145,29 +147,23 @@ function App() {
     SetCode(input_code);
   }
 
-  useEffect(() => {
-    try {
-      SetTransCode(transform(Code).code);
-    }
-    catch (e) {
-      SetTransCode(transform(ErrorComponent(e.message)).code)
-    }
-  }, [Code]);
-
+ 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex' }}>
-
+      <div style={{ display: 'flex'}}>
+      <div style={{width:'50%'}}>
         <Editor
+          placeholder="Input React Code."
           value={Code}
           onValueChange={textarea_onChange}
           highlight={code => highlight(code, languages.jsx)}
           padding={10}
-          style={{ width: '50%', height: '768px' }}
+          
+          className="container__editor"
         />
-        <Frame code={transCode} lib={['antd', 'reactstrap', 'react-icons']} />
-
+        </div>
+        <Frame code={transCode} lib={['antd', 'reactstrap', 'react-treebeard']} />
       </div>
       <input type="text" id="text" />
       <div style={{ display: 'flex' }}>
