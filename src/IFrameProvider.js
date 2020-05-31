@@ -43,6 +43,8 @@ export function IFrameProvider({ children }) {
         children: [],
     }]);
 
+    const [code, SetCode] = useState('');
+
     const SetData = (value,action) => _SetData(produce(data, draft => {
         switch (action) {
             case 'PUSH':
@@ -52,7 +54,7 @@ export function IFrameProvider({ children }) {
     }));
 
 
-    const provider = { data, SetData };
+    const provider = { data, SetData,code,SetCode };
     return (
         <IFrameContext.Provider value={provider}>
             {children}

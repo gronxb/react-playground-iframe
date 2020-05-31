@@ -42,7 +42,7 @@ const Frame = memo(function Frame({ code, lib }) {
         children: Object.keys(v.module).map(m => {
           return {
             title: m,
-            key: v.name+'-'+m,
+            key: v.name + '-' + m,
           }
         })
       }
@@ -62,30 +62,66 @@ const Frame = memo(function Frame({ code, lib }) {
       }
     });
   }, []);
+  //${lib.map((v) => `<script src="https://unpkg.com/${v}" crossorigin></script>`).reduce((a, b) => a + '\n' + b)}
+  useEffect(() => {
+    console.log('lib', lib);
+  }, [lib])
 
+  console.log('렌더링');
+  function onLoad2() {
+    console.log(ref.current.contentWindow);
+    //console.log(lib);
+      ref.current.contentWindow.npm_reload(['antd']);
+  }
   return useMemo(() => {
-    return (<iframe ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
+    return (<iframe id='frame' ref={ref} onLoad={onLoad2} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
     <!DOCTYPE html>
       <html lang="en">
         <head>
-          <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
-          <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
-         
-          ${lib.map((v) => `<script src="https://unpkg.com/${v}" crossorigin></script>`).reduce((a, b) => a + '\n' + b)}
+        <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
+
+        <script type="text/javascript">
+        function npm_reload(npm_libs)
+        {
+          let npm_string = npm_libs.map((v) => \`const {default: \${v}} = await import('https://dev.jspm.io/\${v}');window.\${v} = \${v};\`).join('\\n');
+
+          let scriptTag = document.createElement('script');
+          scriptTag.setAttribute('id','module');
+          scriptTag.setAttribute('type','module');
+          scriptTag.textContent = \`(async () => {
+                const {default: React} = await import('https://dev.jspm.io/react');
+                  window.React = React;
+                  const {default: ReactDOM} = await import('https://dev.jspm.io/react-dom');
+                  window.ReactDOM = ReactDOM;
+                \${npm_string}
+                //ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+                })();\`;
+
+            let module = document.getElementById('module');
+            let head = document.getElementsByTagName('head')[0];
+            module && head.removeChild(document.getElementById('module'));
+
+            head.appendChild(scriptTag);
+            console.log(scriptTag);
+
+        }
+
+        function jsx_reload(code)
+        {
+            var scriptTag = document.createElement('script');
+            scriptTag.setAttribute('id','jsx');
+            scriptTag.textContent  = code;
+    
+            let jsx = document.getElementById('jsx');
+            let head = document.getElementsByTagName('head')[0];
+            jsx && head.removeChild(document.getElementById('jsx'));
+            head.appendChild(scriptTag);
+
+            if(ReactDOM)
+              ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+        }
+        </script>
           
-          <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
-
-
-          <script>
-
-         
-          
-          ${code}
-
-          window.onload = () => {
-            ReactDOM.render(React.createElement( App, null ), document.getElementById('root'));
-          }
-          </script>
         </head>
         <body>
           <div id="root"></div>
@@ -94,12 +130,8 @@ const Frame = memo(function Frame({ code, lib }) {
     </html>
     `)} />
     )
-  }, [code,lib])
-}, (prevProps, nextProps) => {
-  console.log('prevProps', prevProps);
-  console.log('nextProps', nextProps);
+  }, [code, lib])
 });
-
 
 
 const TreeView = () => {
@@ -142,8 +174,10 @@ const TreeView = () => {
   );
 };
 
-function App() {
-  const [transCode, SetTransCode] = useState('');
+function CodeEditor() {
+  
+  const IframeData = useContext(IFrameContext);
+
   const [Code, SetCode] = useState(`
   function App()
   {
@@ -156,6 +190,11 @@ function App() {
     )
   }
   `);
+
+  function textarea_onChange(input_code) {
+    SetCode(input_code);
+   
+  }
 
   const ErrorComponent = useCallback((ErrorMessage) => `
   function App()
@@ -173,48 +212,82 @@ function App() {
   }
 `, []);
 
-  function textarea_onChange(input_code) {
-    SetCode(input_code);
-  }
+  useEffect(()=>{
+    try{
+      let transcode = transform(Code).code;
+      IframeData.SetCode(transcode);
+    }
+    catch(e)
+    {
+      IframeData.SetCode(transform(ErrorComponent(e.message)).code);
+    }
+  },[Code]);
 
   useEffect(() => {
+    if(IframeData === undefined) return;
+    console.log('IframeData',IframeData);
     try {
-      SetTransCode(transform(Code).code);
+     // let _transcode = transform(Code).code;
+      let load_func = document.getElementById('frame').contentWindow.jsx_reload;
+      if (load_func) {
+        console.log(load_func);
+        console.log('전달', IframeData.code);
+        load_func(IframeData.code);
+      }
+  //    SetTransCode(_transcode);
     }
     catch (e) {
-      SetTransCode(transform(ErrorComponent(e.message)).code)
+      console.log('err',e);
+   //   IframeData.SetCode(transform(ErrorComponent(e.message)).code);
+      //SetTransCode(transform(ErrorComponent(e.message)).code)
     }
-  }, [Code]);
+  }, [IframeData]);
 
   return (
     <IFrameProvider>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{ display: 'flex' }}>
-          <div style={{ width: '50%' }}>
-            <Editor
-              placeholder="Input React Code."
-              value={Code}
-              onValueChange={textarea_onChange}
-              highlight={code => highlight(code, languages.jsx)}
-              padding={10}
+    <Editor
+      placeholder="Input React Code."
+      value={Code}
+      onValueChange={textarea_onChange}
+      highlight={code => highlight(code, languages.jsx)}
+      padding={10}
 
-              className="container__editor"
-            />
-          </div>
-          <Frame code={transCode} lib={['antd', 'reactstrap', 'react-treebeard']} />
-        </div>
-        <input type="text" id="text" />
-        <div style={{ display: 'flex' }}>
-          <button onClick={() => {
-            let text = document.getElementById('text').value;
-            axios.get(`http://unpkg.com/${text}`).then((v) => console.log(v));
-          }}>Test</button>
-
-          <TreeView />
-        </div>
-      </div>
+      className="container__editor"
+    />
     </IFrameProvider>
-  );
+  )
+}
+
+function App() {
+  const [transCode, SetTransCode] = useState('');
+
+  const IframeData = useContext(IFrameContext);
+
+
+
+  return useMemo(() => {
+    return (
+      <IFrameProvider>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex' }}>
+            <div style={{ width: '50%' }}>
+              <CodeEditor />
+            </div>
+            <Frame code={''} lib={['antd', 'reactstrap', 'react-custom-scroll']} />
+          </div>
+          <input type="text" id="text" />
+          <div style={{ display: 'flex' }}>
+            <button onClick={() => {
+              let text = document.getElementById('text').value;
+              axios.get(`http://unpkg.com/${text}`).then((v) => console.log(v));
+            }}>Test</button>
+
+            <TreeView />
+          </div>
+        </div>
+      </IFrameProvider>
+    );
+  },[]);
 }
 
 export default App;
