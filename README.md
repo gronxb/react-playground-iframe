@@ -1,2 +1,2 @@
-﻿# react-iframe-in-component
+﻿# react-iframe-for-playground
 Output the react component to the &lt;iframe>
