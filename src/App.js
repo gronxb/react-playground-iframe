@@ -62,16 +62,10 @@ const Frame = memo(function Frame({ code, lib }) {
       }
     });
   }, []);
-  //${lib.map((v) => `<script src="https://unpkg.com/${v}" crossorigin></script>`).reduce((a, b) => a + '\n' + b)}
-  useEffect(() => {
-    console.log('lib', lib);
-  }, [lib])
 
   console.log('렌더링');
   function onLoad2() {
-    console.log(ref.current.contentWindow);
-    //console.log(lib);
-      ref.current.contentWindow.npm_reload(['antd']);
+      ref.current.contentWindow.npm_reload(lib);
   }
   return useMemo(() => {
     return (<iframe id='frame' ref={ref} onLoad={onLoad2} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(`
@@ -102,7 +96,6 @@ const Frame = memo(function Frame({ code, lib }) {
             module && head.removeChild(document.getElementById('module'));
 
             head.appendChild(scriptTag);
-            console.log(scriptTag);
 
         }
 
@@ -225,21 +218,14 @@ function CodeEditor() {
 
   useEffect(() => {
     if(IframeData === undefined) return;
-    console.log('IframeData',IframeData);
     try {
-     // let _transcode = transform(Code).code;
       let load_func = document.getElementById('frame').contentWindow.jsx_reload;
       if (load_func) {
-        console.log(load_func);
-        console.log('전달', IframeData.code);
         load_func(IframeData.code);
       }
-  //    SetTransCode(_transcode);
     }
     catch (e) {
       console.log('err',e);
-   //   IframeData.SetCode(transform(ErrorComponent(e.message)).code);
-      //SetTransCode(transform(ErrorComponent(e.message)).code)
     }
   }, [IframeData]);
 
@@ -273,7 +259,7 @@ function App() {
             <div style={{ width: '50%' }}>
               <CodeEditor />
             </div>
-            <Frame code={''} lib={['antd', 'reactstrap', 'react-custom-scroll']} />
+            <Frame code={''} lib={['antd', 'reactstrap']} />
           </div>
           <input type="text" id="text" />
           <div style={{ display: 'flex' }}>
