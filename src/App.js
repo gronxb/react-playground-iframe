@@ -73,8 +73,22 @@ const Frame = memo(function Frame({ code, lib }) {
       <html lang="en">
         <head>
         <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
-
+        <script type="module">
+          // React Load for Default
+          
+        </script>
         <script type="text/javascript">
+        function Load(flag)
+        {
+          //<div class="loader"></div>
+          let loaderTag = document.createElement('div');
+          loaderTag.setAttribute('id','loader');
+          let body = document.getElementsByTagName('body')[0];
+          if(flag === true)
+            body.appendChild(loaderTag)
+          else
+            body.removeChild(document.getElementById('loader'))
+        }
         function npm_reload(npm_libs)
         {
           let npm_string = npm_libs.map((v) => \`const {default: \${v}} = await import('https://dev.jspm.io/\${v}');window.\${v} = \${v};\`).join('\\n');
@@ -83,12 +97,22 @@ const Frame = memo(function Frame({ code, lib }) {
           scriptTag.setAttribute('id','module');
           scriptTag.setAttribute('type','module');
           scriptTag.textContent = \`(async () => {
-                const {default: React} = await import('https://dev.jspm.io/react');
+            Load(true);
+            console.log('로딩 중');
+                if(window.React === undefined)
+                {
+                  const {default: React} = await import('https://dev.jspm.io/react');
                   window.React = React;
+                }
+                if(window.ReactDOM === undefined)
+                {
                   const {default: ReactDOM} = await import('https://dev.jspm.io/react-dom');
                   window.ReactDOM = ReactDOM;
+                }
                 \${npm_string}
                 //ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+                console.log('로딩 끝');
+                Load(false);
                 })();\`;
 
             let module = document.getElementById('module');
@@ -96,15 +120,14 @@ const Frame = memo(function Frame({ code, lib }) {
             module && head.removeChild(document.getElementById('module'));
 
             head.appendChild(scriptTag);
-
         }
 
         function jsx_reload(code)
         {
-            var scriptTag = document.createElement('script');
+            let scriptTag = document.createElement('script');
             scriptTag.setAttribute('id','jsx');
             scriptTag.textContent  = code;
-    
+            
             let jsx = document.getElementById('jsx');
             let head = document.getElementsByTagName('head')[0];
             jsx && head.removeChild(document.getElementById('jsx'));
@@ -114,11 +137,53 @@ const Frame = memo(function Frame({ code, lib }) {
               ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
         }
         </script>
-          
+        <style>
+        #loader,
+#loader:after {
+  border-radius: 50%;
+  width: 5em;
+  height: 5em;
+}
+#loader {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 0.5em solid rgba(255, 0, 0, 0.2);
+  border-right: 0.5em solid rgba(0, 255, 255, 0.2);
+  border-bottom: 0.5em solid rgba(0, 0, 255, 0.2);
+  border-left: 0.5em solid white;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+        </style>
         </head>
         <body>
           <div id="root"></div>
-
+          
         </body>
     </html>
     `)} />
