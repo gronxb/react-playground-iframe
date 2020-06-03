@@ -143,7 +143,7 @@ export  const IFrame = memo(function IFrame({ code, lib }) {
     }
 
     return useMemo(() => {
-      return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid black' }} src={createBlobUrl(SandBox_Html)} />
+      return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid lightgray' }} src={createBlobUrl(SandBox_Html)} />
       )
     }, []) // First rendered, prevent re-rendering
   });
