@@ -33,6 +33,7 @@ function Loader({ placeholder, callback, item, onItemClick }) {
 
   const [Text, SetText] = useState('');
   const [EnterBlock,SetBlock] = useState(false);
+
   function onEnter(e) {
     if (Text === "") return;
     if(EnterBlock === true) {
@@ -74,6 +75,18 @@ const Logo = styled.div`
   border-bottom: 1px solid grey;
 `;
 function Sidebar({modules,SetModule,css,SetCSS}) {
+  const IframeData = useContext(IFrameContext);
+  useEffect(()=>{
+    
+    if(IframeData.iframe_npm_load === 'error')
+    {
+      message.error('Failed to load NPM module.')
+      SetModule(modules.splice(0,modules.length - 1));
+    }
+
+  },[IframeData.iframe_npm_load]);
+
+ 
   return (
     <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
       <Logo >

@@ -133,22 +133,13 @@ export function SearchTree({modules}) {
     useEffect(()=>{
         if(IframeData.iframe_npm_load === 'load_end')
         {
-            message.success('Success to load NPM module!')
             SetData([{
                 title: 'NPM Module',
                 key: 'NPM Module',
                 children: getNpmData(modules),
             }]);
         }
-        else if(IframeData.iframe_npm_load === 'error')
-        {
-            message.error('Failed to load NPM module.')
-            SetData([{
-                title: 'NPM Module',
-                key: 'NPM Module',
-                children: getNpmData(modules),
-            }]);
-        }
+       
     },[IframeData.iframe_npm_load]);
 
     const onCheck = checkedKeys => {
