@@ -73,6 +73,33 @@ const SandBox_Html = `
         if(window.ReactDOM !== undefined)
           ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
     }
+    
+    // head에 url 이미 존재할 때
+    // head에 있었는데 새로 들어오는 url에 없는 거 일때 (삭제)
+
+    function css_reload(urls)
+    {
+        let linkTag = document.createElement('link');
+        linkTag.setAttribute('rel','stylesheet');
+        linkTag.setAttribute('href','http://');
+
+        let link_arr = Array.from(document.getElementsByTagName('link'));
+
+        let head = document.getElementsByTagName('head')[0];
+        urls.forEach((url) => {
+          
+          let dupl_check = link_arr.some((link) => link.href === url);
+
+          if(dupl_check === false)
+          {
+            let linkTag = document.createElement('link');
+            linkTag.setAttribute('rel','stylesheet');
+            linkTag.setAttribute('href',url);
+            head.appendChild(linkTag);
+          }
+        })
+
+    }
     </script>
     <style>
     #loader,
