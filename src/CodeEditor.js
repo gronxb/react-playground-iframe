@@ -19,11 +19,12 @@ export function CodeEditor({InitCode}) {
     const ErrorComponent = useCallback((ErrorMessage) => `
     function App()
     {
+      const err_msg = \`${ErrorMessage.replace(/`/g,"'")}\`
       return (
-        <div>
+        <div style={{margin:"10px 10px 10px 10px"}}>
           <antd.Alert
           message="Error"
-          description="${ErrorMessage}"
+          description={err_msg}
           type="error"
           showIcon
         />
