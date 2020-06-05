@@ -8,7 +8,6 @@ const SandBox_Html = `
     <script type="text/javascript">
     function onSpinner(flag)
     {
-      console.log("flag",flag);
 
       let body = document.getElementsByTagName('body')[0];
       let root = document.getElementById('root');
@@ -30,13 +29,11 @@ const SandBox_Html = `
 
         body.setAttribute('style','');
         body.removeChild(document.getElementById('loader'));
-        console.log('load_end');
         window.parent.postMessage("load_end", "*");
       }
     }
     function npm_reload(npm_libs)
     {
-      console.log('npm_reload');
       let npm_string = npm_libs.map((v) => \`const {default: \${v.replace(/-/g,"")}} = await import('https://dev.jspm.io/\${v}');window.\${v.replace(/-/g,"")} = \${v.replace(/-/g,"")};\`).join('\\n');
 
       let scriptTag = document.createElement('script');

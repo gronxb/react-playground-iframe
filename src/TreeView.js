@@ -65,7 +65,7 @@ function ImportNPM(modules) { // Import NPM Module imported within <iframe>
 }
 export function SearchTree({modules}) {
     const IframeData = useContext(IFrameContext);
-    const [expandedKeys, SetExpandedKeys] = useState([]);
+    const [expandedKeys, SetExpandedKeys] = useState(['NPM Module']);
     const [searchValue, SetSearchValue] = useState('');
     const [checkedKeys, SetCheckedKeys] = useState([]);
     const [autoExpandParent, SetAutoExpandParent] = useState(true);
@@ -76,6 +76,7 @@ export function SearchTree({modules}) {
         children: [],
     }]);
     const onExpand = expandedKeys => {
+        console.log(expandedKeys);
         SetExpandedKeys(expandedKeys);
         SetAutoExpandParent(false);
     };
@@ -83,6 +84,7 @@ export function SearchTree({modules}) {
         dataList.splice(0, dataList.length);
         generateList(Data);
     }, [Data]);
+
     const onChange = e => {
         const { value } = e.target;
         const expandedKeys = dataList
@@ -97,6 +99,7 @@ export function SearchTree({modules}) {
         SetSearchValue(value);
         SetAutoExpandParent(true);
     };
+
     const loop = data =>
         data.map(item => {
             const index = item.title.indexOf(searchValue);
@@ -148,6 +151,7 @@ export function SearchTree({modules}) {
             <Search style={{ marginBottom: 8 }} placeholder="Imported NPM module Finder" onChange={onChange} />
             <Tree
                 checkable
+                
                 onExpand={onExpand}
                 expandedKeys={expandedKeys}
                 autoExpandParent={autoExpandParent}
