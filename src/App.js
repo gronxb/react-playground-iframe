@@ -1,7 +1,7 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { transform } from 'buble';
 import { Row, Col, Input, Card } from 'antd';
-import { MinusSquareOutlined } from '@ant-design/icons';
+import { MinusSquareOutlined ,GithubOutlined} from '@ant-design/icons';
 
 import "./style.css";
 
@@ -38,7 +38,7 @@ function Loader({ placeholder, callback, item, onItemClick }) {
     SetText(e.target.value);
   }
   return (
-    <div style={{ marginTop: '20px', marginBottom: '20px', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ marginTop: '20px', marginBottom: '10px',paddingBottom:'10px', display: 'flex', flexDirection: 'column',borderBottom: '1px solid lightgrey' }}>
       <Input style={{ marginBottom: '10px' }} placeholder={placeholder} onPressEnter={onEnter} onChange={onChange} value={Text} />
       {item.map((v) =>
         <Item onClick={() => onItemClick(v)}><ItemIcon />{v}</Item>
@@ -47,9 +47,19 @@ function Loader({ placeholder, callback, item, onItemClick }) {
 
   )
 }
+
+const Logo = styled.div`
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-bottom: 1px solid grey;
+`;
 function Sidebar({modules,SetModule,css,SetCSS}) {
   return (
     <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
+      <Logo >
+       <a style={{color:'black'}} href="https://github.com/gron1gh1/react-iframe-for-playground" target="_blank"><p><GithubOutlined /> react-iframe-for-playground</p></a>
+      </Logo>
       <Loader placeholder="Input NPM Module Name"
         callback={(Text) => SetModule([...modules, Text])}
         item={modules}
