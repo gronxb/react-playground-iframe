@@ -26,7 +26,7 @@ const ItemIcon = styled(MinusSquareOutlined)`
   padding-right:5px;
 `;
 
-function Loader({ placeholder,callback,item,onItemClick }) {
+function Loader({ placeholder, callback, item, onItemClick }) {
   const [Text, SetText] = useState('');
   function onEnter(e) {
     if (Text === "") return;
@@ -41,13 +41,29 @@ function Loader({ placeholder,callback,item,onItemClick }) {
     <div style={{ marginTop: '20px', marginBottom: '20px', display: 'flex', flexDirection: 'column' }}>
       <Input style={{ marginBottom: '10px' }} placeholder={placeholder} onPressEnter={onEnter} onChange={onChange} value={Text} />
       {item.map((v) =>
-        <Item onClick={()=>onItemClick(v)}><ItemIcon />{v}</Item>
+        <Item onClick={() => onItemClick(v)}><ItemIcon />{v}</Item>
       )}
     </div>
 
   )
 }
-
+function Sidebar({modules,SetModule,css,SetCSS}) {
+  return (
+    <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
+      <Loader placeholder="Input NPM Module Name"
+        callback={(Text) => SetModule([...modules, Text])}
+        item={modules}
+        onItemClick={(item) => SetModule(modules.filter(m => m !== item))}
+      />
+      <Loader placeholder="Input CSS link"
+        callback={(Text) => SetCSS([...css, Text])}
+        item={css}
+        onItemClick={(item) => SetCSS(css.filter(m => m !== item))}
+      />
+      <SearchTree modules={modules} />
+    </div>
+  )
+}
 function App() {
 
   const InitCode = `
@@ -62,27 +78,15 @@ function App() {
     )
   }
   `
-  const [modules,SetModule] = useState(['antd']);
-  const [css,SetCSS] = useState(['https://unpkg.com/antd@4.2.5/dist/antd.css']);
-  
+  const [modules, SetModule] = useState(['antd']);
+  const [css, SetCSS] = useState(['https://unpkg.com/antd@4.2.5/dist/antd.css']);
+
   return (
     <IFrameProvider>
       <Row style={{ height: '100vh' }}>
         <Col flex="264px" style={{ background: 'white', height: '100vh', borderRight: '1px solid lightgray' }}>
           <Scrollbars style={{ height: '100%' }} autoHide>
-            <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
-              <Loader placeholder="Input NPM Module Name" 
-              callback={(Text)=>SetModule([...modules,Text])}
-              item={modules}
-              onItemClick={(item)=> SetModule(modules.filter(m => m !== item))}
-              />
-              <Loader placeholder="Input CSS link"
-              callback={(Text)=>SetCSS([...css,Text])}
-              item={css}
-              onItemClick={(item)=> SetCSS(css.filter(m => m !== item))}
-              />
-              <SearchTree modules={modules}/>
-            </div>
+            <Sidebar modules={modules} SetModule={SetModule} css={css} SetCSS={SetCSS} />
           </Scrollbars>
         </Col>
         <Col flex="auto" style={{

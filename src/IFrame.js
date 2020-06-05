@@ -11,21 +11,26 @@ const SandBox_Html = `
       console.log("flag",flag);
 
       let body = document.getElementsByTagName('body')[0];
-     
+      let root = document.getElementById('root');
       if(flag === true)
       {
+
+        root.setAttribute('style','display:none');
+
         body.setAttribute('style','overflow:hidden');
         let loaderTag = document.createElement('div');
         loaderTag.setAttribute('id','loader');
         body.appendChild(loaderTag);
         
         window.parent.postMessage("load_start", "*");
-     //   body.setAttribute('style','');
       }
       else
       {
+        root.setAttribute('style','display:block');
+
         body.setAttribute('style','');
         body.removeChild(document.getElementById('loader'));
+        console.log('load_end');
         window.parent.postMessage("load_end", "*");
       }
     }
@@ -38,24 +43,28 @@ const SandBox_Html = `
       scriptTag.setAttribute('id','module');
       scriptTag.setAttribute('type','module');
       scriptTag.textContent = \`(async () => {
-      onSpinner(true);
-          if(window.React === undefined)
-          {
-            const {default: React} = await import('https://dev.jspm.io/react');
-            window.React = React;
-          }
-          if(window.ReactDOM === undefined)
-          {
-            const {default: ReactDOM} = await import('https://dev.jspm.io/react-dom');
-            window.ReactDOM = ReactDOM;
-          }
-          \${npm_string}
-          if(window.App !== undefined)
-            ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
-          onSpinner(false);
-          
-          window.parent.postMessage("load_end", "*");
-        })();\`;
+
+        onSpinner(true);
+        if(window.React === undefined)
+        {
+          const {default: React} = await import('https://dev.jspm.io/react');
+          window.React = React;
+        }
+        if(window.ReactDOM === undefined)
+        {
+          const {default: ReactDOM} = await import('https://dev.jspm.io/react-dom');
+          window.ReactDOM = ReactDOM;
+        }
+
+        //-- Jump Code --
+        \${npm_string}
+        //---------------
+
+        onSpinner(false);
+        if(window.App !== undefined)
+          ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+      
+      })();\`;
 
         let module = document.getElementById('module');
         let head = document.getElementsByTagName('head')[0];
@@ -181,6 +190,7 @@ export  const IFrame = memo(function IFrame({ code, lib,css }) {
     }
 
     useEffect(()=>{ // When lib is added
+
       if(load)
         ref.current.contentWindow.npm_reload(lib);
     },[lib]);
@@ -191,7 +201,7 @@ export  const IFrame = memo(function IFrame({ code, lib,css }) {
     },[css]);
 
     return useMemo(() => {
-      return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid lightgray' }} src={createBlobUrl(SandBox_Html)} />
+      return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid lightgray',background:'white' }} src={createBlobUrl(SandBox_Html)} />
       )
     }, []) // First rendered, prevent re-rendering
   });

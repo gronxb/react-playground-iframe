@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
-import { Tree, Input } from 'antd';
+import { Tree, Input,message } from 'antd';
 import {IFrameContext } from './IFrameProvider';
 const { Search } = Input;
 
@@ -85,9 +85,6 @@ export function SearchTree({modules}) {
     }, [Data]);
     const onChange = e => {
         const { value } = e.target;
-
-        console.log(value, dataList);
-
         const expandedKeys = dataList
             .map(item => {
                 if (item.title.indexOf(value) > -1) {
@@ -126,21 +123,20 @@ export function SearchTree({modules}) {
         });
 
     const onSelect = (selectedKeys, info) => {
-        console.log('onSelect', info);
         SetSelectedKeys(selectedKeys);
     };
 
     useEffect(()=>{
-        if(IframeData.iframe_npm_load === false)
+        if(IframeData.iframe_npm_load === 'load_end')
         {
-        //console.log(modules);
+            message.success('Success NPM Module Load!')
             SetData([{
                 title: 'NPM Module',
                 key: 'NPM Module',
                 children: getNpmData(modules),
             }]);
         }
-    },[IframeData]);
+    },[IframeData.iframe_npm_load]);
 
     const onCheck = checkedKeys => {
         console.log('onCheck', checkedKeys);

@@ -44,7 +44,7 @@ export function IFrameProvider({ children }) {
     }]);
 
     const [code, SetCode] = useState('');
-    const [iframe_npm_load,SetLoad] = useState(false);
+    const [iframe_npm_load,SetLoad] = useState('init');
     const SetData = (value,action) => _SetData(produce(data, draft => {
         switch (action) {
             case 'PUSH':
@@ -55,19 +55,14 @@ export function IFrameProvider({ children }) {
 
     
     useEffect(()=>{
-      window.addEventListener("message", (e)=>{
-        if(typeof e.data === "string")
-          console.log(e.data);
+      window.onmessage = (e)=>{
         if(e.data === 'load_end')
-        {
-          SetLoad(false);
-        }
+          SetLoad('load_end');
         if(e.data === 'load_start')
-        {
-          SetLoad(true);
-        }
-      });
-    },[]);
+          SetLoad('load_start');
+      };
+    },[children]);
+
     const provider = { data, SetData,code,SetCode,iframe_npm_load };
     return (
         <IFrameContext.Provider value={provider}>
