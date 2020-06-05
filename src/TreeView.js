@@ -51,17 +51,18 @@ function getNpmData(modules)// ImportNPM to Tree Data
 }
 
 function ImportNPM(modules) { // Import NPM Module imported within <iframe>
-    let all = Object.keys(document.getElementById('frame').contentWindow);
-
-    return all.filter((v) => modules.some((a) => {
-
-        return a.replace(/-/g, "") === v;
-    })).map((v) => {
-        return {
-            name: v,
-            module: document.getElementById('frame').contentWindow[v]
+    
+    return modules.map((m) => {
+        let module = document.getElementById('frame').contentWindow[m.replace(/-/g, "")];
+        if(module !== undefined)
+        {
+            return  {
+                name: m,
+                module: module
+            }
         }
-    });
+        else return null;
+    }).filter((v) => v !== null);
 }
 export function SearchTree({modules}) {
     const IframeData = useContext(IFrameContext);
@@ -132,7 +133,16 @@ export function SearchTree({modules}) {
     useEffect(()=>{
         if(IframeData.iframe_npm_load === 'load_end')
         {
-            message.success('Success NPM Module Load!')
+            message.success('Success to load NPM module!')
+            SetData([{
+                title: 'NPM Module',
+                key: 'NPM Module',
+                children: getNpmData(modules),
+            }]);
+        }
+        else if(IframeData.iframe_npm_load === 'error')
+        {
+            message.error('Failed to load NPM module.')
             SetData([{
                 title: 'NPM Module',
                 key: 'NPM Module',

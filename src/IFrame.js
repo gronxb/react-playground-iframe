@@ -6,14 +6,13 @@ const SandBox_Html = `
     <head>
 
     <script type="text/javascript">
-    function onSpinner(flag)
+    function onSpinner(flag,msg)
     {
-
       let body = document.getElementsByTagName('body')[0];
       let root = document.getElementById('root');
       if(flag === true)
       {
-
+        if(document.getElementById('loader')) return;
         root.setAttribute('style','display:none');
 
         body.setAttribute('style','overflow:hidden');
@@ -21,7 +20,7 @@ const SandBox_Html = `
         loaderTag.setAttribute('id','loader');
         body.appendChild(loaderTag);
         
-        window.parent.postMessage("load_start", "*");
+        window.parent.postMessage(msg, "*");
       }
       else
       {
@@ -29,9 +28,10 @@ const SandBox_Html = `
 
         body.setAttribute('style','');
         body.removeChild(document.getElementById('loader'));
-        window.parent.postMessage("load_end", "*");
+        window.parent.postMessage(msg, "*");
       }
     }
+
     function npm_reload(npm_libs)
     {
       let npm_string = npm_libs.map((v) => \`const {default: \${v.replace(/-/g,"")}} = await import('https://dev.jspm.io/\${v}');window.\${v.replace(/-/g,"")} = \${v.replace(/-/g,"")};\`).join('\\n');
@@ -41,7 +41,9 @@ const SandBox_Html = `
       scriptTag.setAttribute('type','module');
       scriptTag.textContent = \`(async () => {
 
-        onSpinner(true);
+        onSpinner(true,"load_start");
+        try{
+
         if(window.React === undefined)
         {
           const {default: React} = await import('https://dev.jspm.io/react');
@@ -53,20 +55,25 @@ const SandBox_Html = `
           window.ReactDOM = ReactDOM;
         }
 
-        //-- Jump Code --
+        //-- Added Module --
         \${npm_string}
         //---------------
-
-        onSpinner(false);
-        if(window.App !== undefined)
+        onSpinner(false,"load_end");
+        }
+        catch(e)
+        {
+          onSpinner(false,"error");
+        }
+        finally {
+          if(window.App !== undefined)
           ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
-      
+          let head = document.getElementsByTagName('head')[0];
+          head.removeChild(document.getElementById('module'));
+        }
+        
       })();\`;
-
-        let module = document.getElementById('module');
+      
         let head = document.getElementsByTagName('head')[0];
-        module && head.removeChild(document.getElementById('module'));
-
         head.appendChild(scriptTag);
     }
 

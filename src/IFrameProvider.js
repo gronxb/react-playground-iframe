@@ -56,10 +56,8 @@ export function IFrameProvider({ children }) {
     
     useEffect(()=>{
       window.onmessage = (e)=>{
-        if(e.data === 'load_end')
-          SetLoad('load_end');
-        if(e.data === 'load_start')
-          SetLoad('load_start');
+        if(typeof e.data === 'string')
+          SetLoad(e.data);
       };
     },[children]);
 

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { transform } from 'buble';
-import { Row, Col, Input, Card } from 'antd';
+import { Row, Col, Input, message } from 'antd';
 import { MinusSquareOutlined ,GithubOutlined} from '@ant-design/icons';
 
 import "./style.css";
@@ -15,7 +15,9 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 const Item = styled.span`
   margin-left: 10px;
-
+  overflow:hidden;
+  white-space:nowrap; 
+  text-overflow: ellipsis;
   &:hover{
     cursor: pointer;
     color: Crimson;
@@ -27,12 +29,29 @@ const ItemIcon = styled(MinusSquareOutlined)`
 `;
 
 function Loader({ placeholder, callback, item, onItemClick }) {
+  const IframeData = useContext(IFrameContext);
+
   const [Text, SetText] = useState('');
+  const [EnterBlock,SetBlock] = useState(false);
   function onEnter(e) {
     if (Text === "") return;
+    if(EnterBlock === true) {
+      message.warning('Module cannot be added while loading.');
+      return;
+    }
     SetText('');
     callback(Text);
   }
+
+  useEffect(()=>{
+    if(IframeData.iframe_npm_load === 'load_start')
+    {
+      SetBlock(true);
+    }
+    else{
+      SetBlock(false);
+    }
+  },[IframeData.iframe_npm_load]);
 
   function onChange(e) {
     SetText(e.target.value);
@@ -40,8 +59,8 @@ function Loader({ placeholder, callback, item, onItemClick }) {
   return (
     <div style={{ marginTop: '20px', marginBottom: '10px',paddingBottom:'10px', display: 'flex', flexDirection: 'column',borderBottom: '1px solid lightgrey' }}>
       <Input style={{ marginBottom: '10px' }} placeholder={placeholder} onPressEnter={onEnter} onChange={onChange} value={Text} />
-      {item.map((v) =>
-        <Item onClick={() => onItemClick(v)}><ItemIcon />{v}</Item>
+      {item.map((v,i) =>
+        <Item onClick={() => onItemClick(v)} key={i}><ItemIcon />{v}</Item>
       )}
     </div>
 
@@ -95,7 +114,7 @@ function App() {
     <IFrameProvider>
       <Row style={{ height: '100vh' }}>
         <Col flex="264px" style={{ background: 'white', height: '100vh', borderRight: '1px solid lightgray' }}>
-          <Scrollbars style={{ height: '100%' }} autoHide>
+          <Scrollbars style={{ height: '100%'}} autoHide>
             <Sidebar modules={modules} SetModule={SetModule} css={css} SetCSS={SetCSS} />
           </Scrollbars>
         </Col>
