@@ -145,7 +145,7 @@ export function SearchTree() {
 
     return (
         <div>
-            <Search style={{ marginBottom: 8 }} placeholder="Search" onChange={onChange} />
+            <Search style={{ marginBottom: 8 }} placeholder="Imported NPM module Finder" onChange={onChange} />
             <Tree
                 checkable
                 onExpand={onExpand}

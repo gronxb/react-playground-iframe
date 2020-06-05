@@ -1,10 +1,9 @@
-import React, { useState, useCallback, useRef, memo, useMemo } from 'react';
+import React, { useState,useEffect, useRef, memo, useMemo } from 'react';
 
 const SandBox_Html = `
 <!DOCTYPE html>
   <html lang="en">
     <head>
-    <link rel="stylesheet" href="https://unpkg.com/antd@4.2.5/dist/antd.css">
 
     <script type="text/javascript">
     function onSpinner(flag)
@@ -29,6 +28,7 @@ const SandBox_Html = `
     }
     function npm_reload(npm_libs)
     {
+      console.log('npm_reload');
       let npm_string = npm_libs.map((v) => \`const {default: \${v.replace(/-/g,"")}} = await import('https://dev.jspm.io/\${v}');window.\${v.replace(/-/g,"")} = \${v.replace(/-/g,"")};\`).join('\\n');
 
       let scriptTag = document.createElement('script');
@@ -74,15 +74,9 @@ const SandBox_Html = `
           ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
     }
     
-    // head에 url 이미 존재할 때
-    // head에 있었는데 새로 들어오는 url에 없는 거 일때 (삭제)
 
     function css_reload(urls)
     {
-        let linkTag = document.createElement('link');
-        linkTag.setAttribute('rel','stylesheet');
-        linkTag.setAttribute('href','http://');
-
         let link_arr = Array.from(document.getElementsByTagName('link'));
 
         let head = document.getElementsByTagName('head')[0];
@@ -97,7 +91,15 @@ const SandBox_Html = `
             linkTag.setAttribute('href',url);
             head.appendChild(linkTag);
           }
-        })
+        });
+
+        link_arr.forEach((link) =>{
+          let del_check = urls.every((url) => link.href !== url);
+          if(del_check === true)
+          {
+            head.removeChild(link);
+          }
+        });
 
     }
     </script>
@@ -160,14 +162,28 @@ function createBlobUrl(html){
     return URL.createObjectURL(blob);
 };
 
-export  const IFrame = memo(function IFrame({ code, lib }) {
+export  const IFrame = memo(function IFrame({ code, lib,css }) {
+    const [load,SetLoad] = useState(false);
+
     const ref = useRef();
     console.log('렌더링');
 
     function onLoad() {
       ref.current.contentWindow.npm_reload(lib);
       ref.current.contentWindow.jsx_reload(code);
+      ref.current.contentWindow.css_reload(css);
+      SetLoad(true);
     }
+
+    useEffect(()=>{ // When lib is added
+      if(load)
+        ref.current.contentWindow.npm_reload(lib);
+    },[lib]);
+
+    useEffect(()=>{ // When lib is added
+      if(load)
+        ref.current.contentWindow.css_reload(css);
+    },[css]);
 
     return useMemo(() => {
       return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{ width: '50%', border: '1px solid lightgray' }} src={createBlobUrl(SandBox_Html)} />

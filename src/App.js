@@ -1,7 +1,7 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { transform } from 'buble';
 import { Row, Col, Input, Card } from 'antd';
-import {MinusSquareOutlined} from '@ant-design/icons';
+import { MinusSquareOutlined } from '@ant-design/icons';
 
 import "./style.css";
 
@@ -10,27 +10,38 @@ import { IFrame } from './IFrame';
 import { CodeEditor } from './CodeEditor';
 import { SearchTree } from './TreeView';
 
+import styled from "styled-components"
+import { Scrollbars } from 'react-custom-scrollbars';
 
+const Item = styled.span`
+  margin-left: 10px;
 
-function NpmLoader() {
-  const [Text,SetText] = useState('');
-  const [Module,SetModule] = useState([]);
-  function onEnter(e)
-  {
-    SetModule([...Module,Text]);
+  &:hover{
+    cursor: pointer;
+    color: Crimson;
+  }
+`;
+
+const ItemIcon = styled(MinusSquareOutlined)`
+  padding-right:5px;
+`;
+
+function Loader({ placeholder,callback,item,onItemClick }) {
+  const [Text, SetText] = useState('');
+  function onEnter(e) {
+    if (Text === "") return;
     SetText('');
+    callback(Text);
   }
 
-  function onChange(e)
-  {
+  function onChange(e) {
     SetText(e.target.value);
   }
   return (
-    <div style={{marginTop:'20px',marginBottom:'20px',display:'flex',flexDirection:'column'}}>
-      <Input style={{marginBottom:'10px'}} placeholder="Input NPM Module Name" onPressEnter={onEnter} onChange={onChange} value={Text}/>
-      {Module.map((v) =>
-          <span style={{marginLeft:'10px'}}><MinusSquareOutlined style={{marginRight:"10px"}}/>{v}</span>
-      
+    <div style={{ marginTop: '20px', marginBottom: '20px', display: 'flex', flexDirection: 'column' }}>
+      <Input style={{ marginBottom: '10px' }} placeholder={placeholder} onPressEnter={onEnter} onChange={onChange} value={Text} />
+      {item.map((v) =>
+        <Item onClick={()=>onItemClick(v)}><ItemIcon />{v}</Item>
       )}
     </div>
 
@@ -51,13 +62,27 @@ function App() {
     )
   }
   `
-
+  const [modules,SetModule] = useState(['antd']);
+  const [css,SetCSS] = useState(['https://unpkg.com/antd@4.2.5/dist/antd.css']);
   return (
     <IFrameProvider>
       <Row style={{ height: '100vh' }}>
-        <Col flex="264px" style={{ background: 'white', height: '100vh', overflowY: 'scroll' }}>
-          <NpmLoader />
-          <SearchTree />
+        <Col flex="264px" style={{ background: 'white', height: '100vh', borderRight: '1px solid lightgray' }}>
+          <Scrollbars style={{ height: '100%' }} autoHide>
+            <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
+              <Loader placeholder="Input NPM Module Name" 
+              callback={(Text)=>SetModule([...modules,Text])}
+              item={modules}
+              onItemClick={(item)=> SetModule(modules.filter(m => m !== item))}
+              />
+              <Loader placeholder="Input CSS link"
+              callback={(Text)=>SetCSS([...css,Text])}
+              item={css}
+              onItemClick={(item)=> SetCSS(css.filter(m => m !== item))}
+              />
+              <SearchTree />
+            </div>
+          </Scrollbars>
         </Col>
         <Col flex="auto" style={{
           background: 'lightgray',
@@ -69,7 +94,7 @@ function App() {
             <div style={{ width: '50%' }}>
               <CodeEditor InitCode={InitCode} />
             </div>
-            <IFrame code={transform(InitCode).code} lib={['antd', 'reactstrap', 'react-custom-scroll']} />
+            <IFrame code={transform(InitCode).code} lib={modules} css={css} />
           </div>
 
         </Col>
