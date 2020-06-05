@@ -64,6 +64,7 @@ function App() {
   `
   const [modules,SetModule] = useState(['antd']);
   const [css,SetCSS] = useState(['https://unpkg.com/antd@4.2.5/dist/antd.css']);
+  
   return (
     <IFrameProvider>
       <Row style={{ height: '100vh' }}>
@@ -80,7 +81,7 @@ function App() {
               item={css}
               onItemClick={(item)=> SetCSS(css.filter(m => m !== item))}
               />
-              <SearchTree />
+              <SearchTree modules={modules}/>
             </div>
           </Scrollbars>
         </Col>

@@ -9,6 +9,7 @@ const SandBox_Html = `
     function onSpinner(flag)
     {
       console.log("flag",flag);
+
       let body = document.getElementsByTagName('body')[0];
      
       if(flag === true)
@@ -18,12 +19,14 @@ const SandBox_Html = `
         loaderTag.setAttribute('id','loader');
         body.appendChild(loaderTag);
         
+        window.parent.postMessage("load_start", "*");
      //   body.setAttribute('style','');
       }
       else
       {
         body.setAttribute('style','');
         body.removeChild(document.getElementById('loader'));
+        window.parent.postMessage("load_end", "*");
       }
     }
     function npm_reload(npm_libs)
@@ -50,6 +53,8 @@ const SandBox_Html = `
           if(window.App !== undefined)
             ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
           onSpinner(false);
+          
+          window.parent.postMessage("load_end", "*");
         })();\`;
 
         let module = document.getElementById('module');

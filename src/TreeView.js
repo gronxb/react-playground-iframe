@@ -1,6 +1,6 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { Tree, Input } from 'antd';
-
+import {IFrameContext } from './IFrameProvider';
 const { Search } = Input;
 
 const dataList = [];
@@ -29,10 +29,9 @@ const getParentKey = (key, tree) => {
     return parentKey;
 };
 
-function getNpmData(lib)// ImportNPM to Tree Data
+function getNpmData(modules)// ImportNPM to Tree Data
 {
-    let main = document.getElementById('frame').contentWindow;
-    let npm_infos = ImportNPM(lib);
+    let npm_infos = ImportNPM(modules);
 
     let treeData = npm_infos.map((v) => {
 
@@ -47,14 +46,14 @@ function getNpmData(lib)// ImportNPM to Tree Data
             })
         }
     });
-    //  IframeData.SetData(treeData, 'PUSH');
     console.log('treeData', treeData);
     return treeData;
 }
 
-function ImportNPM(lib_names) { // Import NPM Module imported within <iframe>
+function ImportNPM(modules) { // Import NPM Module imported within <iframe>
     let all = Object.keys(document.getElementById('frame').contentWindow);
-    return all.filter((v) => lib_names.some((a) => {
+
+    return all.filter((v) => modules.some((a) => {
 
         return a.replace(/-/g, "") === v;
     })).map((v) => {
@@ -64,7 +63,8 @@ function ImportNPM(lib_names) { // Import NPM Module imported within <iframe>
         }
     });
 }
-export function SearchTree() {
+export function SearchTree({modules}) {
+    const IframeData = useContext(IFrameContext);
     const [expandedKeys, SetExpandedKeys] = useState([]);
     const [searchValue, SetSearchValue] = useState('');
     const [checkedKeys, SetCheckedKeys] = useState([]);
@@ -127,16 +127,20 @@ export function SearchTree() {
 
     const onSelect = (selectedKeys, info) => {
         console.log('onSelect', info);
-        if (info.node.key === "NPM Module") {
+        SetSelectedKeys(selectedKeys);
+    };
 
+    useEffect(()=>{
+        if(IframeData.iframe_npm_load === false)
+        {
+        //console.log(modules);
             SetData([{
                 title: 'NPM Module',
                 key: 'NPM Module',
-                children: getNpmData(['antd', 'reactstrap', 'react-custom-scroll']),
+                children: getNpmData(modules),
             }]);
         }
-        SetSelectedKeys(selectedKeys);
-    };
+    },[IframeData]);
 
     const onCheck = checkedKeys => {
         console.log('onCheck', checkedKeys);

@@ -1,4 +1,4 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import produce from 'immer';
 
 export const IFrameContext = createContext();
@@ -44,7 +44,7 @@ export function IFrameProvider({ children }) {
     }]);
 
     const [code, SetCode] = useState('');
-
+    const [iframe_npm_load,SetLoad] = useState(false);
     const SetData = (value,action) => _SetData(produce(data, draft => {
         switch (action) {
             case 'PUSH':
@@ -53,8 +53,22 @@ export function IFrameProvider({ children }) {
         }
     }));
 
-
-    const provider = { data, SetData,code,SetCode };
+    
+    useEffect(()=>{
+      window.addEventListener("message", (e)=>{
+        if(typeof e.data === "string")
+          console.log(e.data);
+        if(e.data === 'load_end')
+        {
+          SetLoad(false);
+        }
+        if(e.data === 'load_start')
+        {
+          SetLoad(true);
+        }
+      });
+    },[]);
+    const provider = { data, SetData,code,SetCode,iframe_npm_load };
     return (
         <IFrameContext.Provider value={provider}>
             {children}
