@@ -22,8 +22,9 @@ export function CodeEditor({InitCode}) {
         IframeData.SetCode(transcode);
       }
       catch (e) {
-        let load_func = document.getElementById('frame').contentWindow.jsx_reload;
-        load_func(transform(ErrorComponent(e.message)).code);
+        //let load_func = document.getElementById('frame').contentWindow.jsx_reload;
+      //  load_func(transform(ErrorComponent(e.message)).code);
+        ErrorComponent(e.message);
       //  IframeData.SetCode(transform(ErrorComponent(e.message)).code);
       }
     }, [Code]);
