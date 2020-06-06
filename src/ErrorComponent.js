@@ -1,6 +1,4 @@
-
 export function ErrorComponent(err_msg) {
-  // const err_msg = \`${ErrorMessage.replace(/`/g,"'")}\`
    let iframe = document.getElementById('frame').contentWindow;
    iframe.ReactDOM.render(iframe.React.createElement('div', { class: "ant-alert ant-alert-error ant-alert-with-description" , style: {margin:'10px 10px 10px 10px'} },
      iframe.React.createElement('span', { role: "img", 'aria-label': "close-circle", class: "anticon anticon-close-circle ant-alert-icon" },

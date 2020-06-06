@@ -1,11 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react';
-import produce from 'immer';
-import { transform } from 'buble';
 import { ErrorComponent } from './ErrorComponent';
-
 export const IFrameContext = createContext();
-
-
 
 export function IFrameProvider({ children }) {
 

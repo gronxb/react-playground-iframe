@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useContext, memo, useSelector, useMemo } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {  IFrameContext } from './IFrameProvider';
 import Editor from 'react-simple-code-editor';
 import { transform } from 'buble';
@@ -22,10 +22,7 @@ export function CodeEditor({InitCode}) {
         IframeData.SetCode(transcode);
       }
       catch (e) {
-        //let load_func = document.getElementById('frame').contentWindow.jsx_reload;
-      //  load_func(transform(ErrorComponent(e.message)).code);
         ErrorComponent(e.message);
-      //  IframeData.SetCode(transform(ErrorComponent(e.message)).code);
       }
     }, [Code]);
   

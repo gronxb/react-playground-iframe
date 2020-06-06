@@ -37,13 +37,13 @@ function Loader({ placeholder, callback, item, onItemClick }) {
     }
 
     useEffect(() => {
-        if (IframeData.iframe_npm_load === 'load_start') {
+        if (IframeData.state.name === 'load_start') {
             SetBlock(true);
         }
         else {
             SetBlock(false);
         }
-    }, [IframeData.iframe_npm_load]);
+    }, [IframeData.state]);
 
     function onChange(e) {
         SetText(e.target.value);
@@ -65,6 +65,7 @@ font-size: 14px;
 font-weight: bold;
 border-bottom: 1px solid grey;
 `;
+
 export function Sidebar({ modules, SetModule, css, SetCSS }) {
     const IframeData = useContext(IFrameContext);
     useEffect(() => {
