@@ -31,11 +31,20 @@ const SandBox_Html = `
         window.parent.postMessage(msg, "*");
       }
     }
-
+    
     function npm_reload(npm_libs)
     {
-      let npm_string = npm_libs.map((v) => \`const {default: \${v.replace(/-/g,"")}} = await import('https://dev.jspm.io/\${v}');window.\${v.replace(/-/g,"")} = \${v.replace(/-/g,"")};\`).join('\\n');
+      if(window.prev_libs !== undefined) // Make Delete List
+      {
+        let del_list = window.prev_libs.filter((p) => !npm_libs.some((v) => p === v));
+        del_list.forEach((v) => {
+          delete window[v];
+        })
+      }
 
+      window.prev_libs = npm_libs;
+      let npm_string = npm_libs.map((v) => \`const {default: \${v.replace(/-/g,"")}} = await import('https://dev.jspm.io/\${v}');window.\${v.replace(/-/g,"")} = \${v.replace(/-/g,"")};\`).join('\\n');
+      
       let scriptTag = document.createElement('script');
       scriptTag.setAttribute('id','module');
       scriptTag.setAttribute('type','module');
@@ -44,21 +53,21 @@ const SandBox_Html = `
         onSpinner(true,"load_start");
         try{
 
-        if(window.React === undefined)
-        {
-          const {default: React} = await import('https://dev.jspm.io/react');
-          window.React = React;
-        }
-        if(window.ReactDOM === undefined)
-        {
-          const {default: ReactDOM} = await import('https://dev.jspm.io/react-dom');
-          window.ReactDOM = ReactDOM;
-        }
+          if(window.React === undefined)
+          {
+            const {default: React} = await import('https://dev.jspm.io/react');
+            window.React = React;
+          }
+          if(window.ReactDOM === undefined)
+          {
+            const {default: ReactDOM} = await import('https://dev.jspm.io/react-dom');
+            window.ReactDOM = ReactDOM;
+          }
 
         //-- Added Module --
         \${npm_string}
         //---------------
-        onSpinner(false,"load_end");
+         onSpinner(false,"load_end");
         }
         catch(e)
         {

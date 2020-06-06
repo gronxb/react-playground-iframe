@@ -83,7 +83,11 @@ export function Sidebar({ modules, SetModule, css, SetCSS }) {
                 <a style={{ color: 'black' }} href="https://github.com/gron1gh1/react-iframe-for-playground" target="_blank"><GithubOutlined /> react-iframe-for-playground</a>
             </Logo>
             <Loader placeholder="Input NPM Module Name"
-                callback={(Text) => SetModule([...modules, Text])}
+                callback={(Text) => {
+                    SetModule([...modules, Text]);
+                    console.log('Text',IframeData.code);
+                    document.getElementById('frame').contentWindow.jsx_reload(IframeData.code);
+                }}
                 item={modules}
                 onItemClick={(item) => SetModule(modules.filter(m => m !== item))}
             />

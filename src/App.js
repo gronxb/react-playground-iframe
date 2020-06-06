@@ -9,7 +9,7 @@ import { IFrame } from './IFrame';
 import { CodeEditor } from './CodeEditor';
 
 import { Scrollbars } from 'react-custom-scrollbars';
-import {Sidebar} from './Sidebar';
+import { Sidebar } from './Sidebar';
 
 function App() {
 
@@ -32,7 +32,7 @@ function App() {
     <IFrameProvider>
       <Row style={{ height: '100vh' }}>
         <Col flex="264px" style={{ background: 'white', height: '100vh', borderRight: '1px solid lightgray' }}>
-          <Scrollbars style={{ height: '100%'}} autoHide>
+          <Scrollbars style={{ height: '100%' }} autoHide>
             <Sidebar modules={modules} SetModule={SetModule} css={css} SetCSS={SetCSS} />
           </Scrollbars>
         </Col>

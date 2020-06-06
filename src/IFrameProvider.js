@@ -1,5 +1,7 @@
 import React, { useState, createContext, useEffect } from 'react';
 import produce from 'immer';
+import { transform } from 'buble';
+import {ErrorComponent} from './ErrorComponent';
 
 export const IFrameContext = createContext();
 /*
@@ -37,34 +39,35 @@ export const IFrameContext = createContext();
 */
 
 export function IFrameProvider({ children }) {
-    const [data, _SetData] = useState([{
-        title: 'NPM Module',
-        key: 'NPM Module',
-        children: [],
-    }]);
 
-    const [code, SetCode] = useState('');
-    const [iframe_npm_load,SetLoad] = useState('init');
-    const SetData = (value,action) => _SetData(produce(data, draft => {
-        switch (action) {
-            case 'PUSH':
-                draft[0].children.push(...value);
-                break;
-        }
-    }));
 
-    
-    useEffect(()=>{
-      window.onmessage = (e)=>{
-        if(typeof e.data === 'string')
-          SetLoad(e.data);
-      };
-    },[children]);
+  const [code, SetCode] = useState('');
+  const [iframe_npm_load, SetLoad] = useState('init');
 
-    const provider = { data, SetData,code,SetCode,iframe_npm_load };
-    return (
-        <IFrameContext.Provider value={provider}>
-            {children}
-        </IFrameContext.Provider>
-    )
+  useEffect(() => { // Step 2. TransCode in blobHTML 
+    let load_func = document.getElementById('frame').contentWindow.jsx_reload;
+    if (load_func) {
+      try {
+        load_func(code);
+      }
+      catch (e) {
+        load_func(transform(ErrorComponent(e.message)).code);
+      }
+    }
+  }, [code]);
+
+
+  useEffect(() => {
+    window.onmessage = (e) => {
+      if (typeof e.data === 'string')
+        SetLoad(e.data);
+    };
+  }, [children]);
+
+  const provider = { code, SetCode, iframe_npm_load };
+  return (
+    <IFrameContext.Provider value={provider}>
+      {children}
+    </IFrameContext.Provider>
+  )
 }
