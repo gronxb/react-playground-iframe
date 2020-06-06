@@ -42,8 +42,7 @@ export function IFrameProvider({ children }) {
 
 
   const [code, SetCode] = useState('');
-  const [iframe_npm_load, SetLoad] = useState('init');
-
+  const [state, SetState] = useState({name: 'init',msg:''});
   useEffect(() => { // Step 2. TransCode in blobHTML 
     let load_func = document.getElementById('frame').contentWindow.jsx_reload;
     if (load_func) {
@@ -51,20 +50,33 @@ export function IFrameProvider({ children }) {
         load_func(code);
       }
       catch (e) {
-        load_func(transform(ErrorComponent(e.message)).code);
       }
     }
   }, [code]);
 
+  useEffect(() => {
+      switch(state.name){
+        case 'error':
+          let load_func = document.getElementById('frame').contentWindow.jsx_reload;
+          load_func(transform(ErrorComponent(state.msg)).code);
+          break;
+      }
+  },[state]);
 
   useEffect(() => {
     window.onmessage = (e) => {
       if (typeof e.data === 'string')
-        SetLoad(e.data);
+      if(e.data.indexOf(':') !== -1)
+        SetState({
+          name: e.data.substr(0,e.data.indexOf(':')),
+          msg:e.data.substr(e.data.indexOf(':') + 1)
+        });
+      else
+      SetState({name: e.data,msg:''});
     };
-  }, [children]);
+  }, []);
 
-  const provider = { code, SetCode, iframe_npm_load };
+  const provider = { code, SetCode, state };
   return (
     <IFrameContext.Provider value={provider}>
       {children}

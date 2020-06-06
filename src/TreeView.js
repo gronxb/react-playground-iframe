@@ -131,7 +131,7 @@ export function SearchTree({modules}) {
     };
 
     useEffect(()=>{
-        if(IframeData.iframe_npm_load === 'load_end')
+        if(IframeData.state.name === 'load_end')
         {
             SetData([{
                 title: 'NPM Module',
@@ -140,7 +140,7 @@ export function SearchTree({modules}) {
             }]);
         }
        
-    },[IframeData.iframe_npm_load]);
+    },[IframeData.state]);
 
     const onCheck = checkedKeys => {
         console.log('onCheck', checkedKeys);

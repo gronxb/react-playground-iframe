@@ -4,7 +4,7 @@ const SandBox_Html = `
 <!DOCTYPE html>
   <html lang="en">
     <head>
-
+    
     <script type="text/javascript">
     function onSpinner(flag,msg)
     {
@@ -71,7 +71,7 @@ const SandBox_Html = `
         }
         catch(e)
         {
-          onSpinner(false,"error");
+          onSpinner(false,"load_error");
         }
         finally {
           if(window.App !== undefined)
@@ -86,6 +86,7 @@ const SandBox_Html = `
         head.appendChild(scriptTag);
     }
 
+   
     function jsx_reload(code)
     {
         let scriptTag = document.createElement('script');
@@ -128,6 +129,12 @@ const SandBox_Html = `
           }
         });
 
+    }
+    window.onload = () => {
+      window.onerror = function(e)
+      {
+        window.parent.postMessage(\`error:\${e}\`, "*");
+      }
     }
     </script>
     <style>

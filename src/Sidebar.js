@@ -69,12 +69,12 @@ export function Sidebar({ modules, SetModule, css, SetCSS }) {
     const IframeData = useContext(IFrameContext);
     useEffect(() => {
 
-        if (IframeData.iframe_npm_load === 'error') {
+        if (IframeData.state.name === 'load_error') {
             message.error('Failed to load NPM module.')
             SetModule(modules.splice(0, modules.length - 1));
         }
 
-    }, [IframeData.iframe_npm_load]);
+    }, [IframeData.state]);
 
 
     return (
@@ -85,8 +85,6 @@ export function Sidebar({ modules, SetModule, css, SetCSS }) {
             <Loader placeholder="Input NPM Module Name"
                 callback={(Text) => {
                     SetModule([...modules, Text]);
-                    console.log('Text',IframeData.code);
-                    document.getElementById('frame').contentWindow.jsx_reload(IframeData.code);
                 }}
                 item={modules}
                 onItemClick={(item) => SetModule(modules.filter(m => m !== item))}
