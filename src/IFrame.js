@@ -1,4 +1,5 @@
 import React, { useState,useEffect, useRef, memo, useMemo } from 'react';
+import { transform } from 'buble';
 
 const SandBox_Html = `
 <!DOCTYPE html>
@@ -74,8 +75,12 @@ const SandBox_Html = `
           onSpinner(false,"load_error");
         }
         finally {
+          jsx_reload('');
+          console.log('final',window.App);
           if(window.App !== undefined)
-          ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+          {
+            ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+          }
           let head = document.getElementsByTagName('head')[0];
           head.removeChild(document.getElementById('module'));
         }
@@ -89,14 +94,20 @@ const SandBox_Html = `
    
     function jsx_reload(code)
     {
-        let scriptTag = document.createElement('script');
-        scriptTag.setAttribute('id','jsx');
-        scriptTag.textContent  = \`{
+
+      let scriptTag = document.createElement('script');
+      scriptTag.setAttribute('id','jsx');
+      if(code === '') // default reload
+      {
+        scriptTag.textContent = document.getElementById('jsx').textContent;
+      }
+      else{
+        scriptTag.textContent  = \`(function anonymous(){
           \${code}
           if(window.ReactDOM !== undefined)
             ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
-        }\`;
-        
+        })();\`;
+      }
         let jsx = document.getElementById('jsx');
         let head = document.getElementsByTagName('head')[0];
         jsx && head.removeChild(document.getElementById('jsx'));
@@ -200,16 +211,17 @@ function createBlobUrl(html){
     return URL.createObjectURL(blob);
 };
 
-export  const IFrame = memo(function IFrame({ code, lib,css }) {
+export  const IFrame = memo(function IFrame({ initcode, lib,css }) {
     const [load,SetLoad] = useState(false);
 
     const ref = useRef();
     console.log('렌더링');
 
     function onLoad() {
-      ref.current.contentWindow.npm_reload(lib);
-      ref.current.contentWindow.jsx_reload(code);
+      console.log('iframe',initcode);
+      ref.current.contentWindow.jsx_reload( transform(initcode,{transforms:{moduleImport: false,letConst:false,destructuring:false}}).code);
       ref.current.contentWindow.css_reload(css);
+      ref.current.contentWindow.npm_reload(lib);
       SetLoad(true);
     }
 

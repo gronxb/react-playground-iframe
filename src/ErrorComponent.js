@@ -1,5 +1,7 @@
 export function ErrorComponent(err_msg) {
    let iframe = document.getElementById('frame').contentWindow;
+   if(iframe.ReactDOM)
+   {
    iframe.ReactDOM.render(iframe.React.createElement('div', { class: "ant-alert ant-alert-error ant-alert-with-description" , style: {margin:'10px 10px 10px 10px'} },
      iframe.React.createElement('span', { role: "img", 'aria-label': "close-circle", class: "anticon anticon-close-circle ant-alert-icon" },
        iframe.React.createElement('svg', { viewBox: "64 64 896 896", focusable: "false", class: "", 'data-icon': "close-circle", width: "1em", height: "1em", fill: "currentColor", 'aria-hidden': "true" },
@@ -11,4 +13,5 @@ export function ErrorComponent(err_msg) {
      iframe.React.createElement('span', { class: "ant-alert-message" }, "Error"),
      iframe.React.createElement('span', { class: "ant-alert-description" }, err_msg)
    ), document.getElementById('frame').contentDocument.getElementById('root'));
+   }
  }

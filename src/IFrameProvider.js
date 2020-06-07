@@ -32,6 +32,7 @@ export function IFrameProvider({ children }) {
 
   useEffect(() => { // Catch Javascript Error
     switch (state.name) {
+
       case 'error':
         ErrorComponent(state.msg);
         break;
