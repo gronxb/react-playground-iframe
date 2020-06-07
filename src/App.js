@@ -26,6 +26,7 @@ function App()
 }`;
   const [modules, SetModule] = useState(['antd']);
   const [css, SetCSS] = useState(['https://unpkg.com/antd@4.2.5/dist/antd.css']);
+
   useEffect(()=>{
       console.log(modules);
   },[modules]);
@@ -35,7 +36,7 @@ function App()
       <Row style={{ height: '100vh' }}>
         <Col flex="264px" style={{ background: 'white', height: '100vh', borderRight: '1px solid lightgray' }}>
           <Scrollbars style={{ height: '100%' }} autoHide>
-            <Sidebar modules={modules} SetModule={SetModule} css={css} SetCSS={SetCSS} />
+            <Sidebar modules={modules} SetModule={SetModule} css={css} SetCSS={SetCSS}/>
           </Scrollbars>
         </Col>
         <Col flex="auto" style={{
@@ -46,7 +47,7 @@ function App()
 
           <div style={{ display: 'flex' }}>
             <div style={{ width: '50%' }}>
-              <CodeEditor InitCode={InitCode} />
+              <CodeEditor InitCode={InitCode}/>
             </div>
             <IFrame initcode={InitCode} lib={modules} css={css} />
           </div>

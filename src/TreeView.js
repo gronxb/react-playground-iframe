@@ -74,7 +74,6 @@ export function SearchTree({ modules }) {
         children: [],
     }]);
     const onExpand = expandedKeys => {
-        console.log(expandedKeys);
         SetExpandedKeys(expandedKeys);
         SetAutoExpandParent(false);
     };
@@ -136,7 +135,7 @@ export function SearchTree({ modules }) {
     }, [IframeData.state]);
 
     const onCheck = checkedKeys => {
-        console.log('onCheck', checkedKeys);
+        IframeData.SetIncludes(checkedKeys);
         SetCheckedKeys(checkedKeys);
     };
 

@@ -9,11 +9,7 @@ export function IFrameProvider({ children }) {
 
   const [code, SetCode] = useState('');
   const [state, SetState] = useState({ name: 'init', msg: '' });
-  const [_import,SetImport] = useState([]);
-
-  useEffect(() => {
-    console.log(_import);
-  }, [_import]);
+  const [includes,SetIncludes] = useState([]); 
 
   useEffect(() => { // Code To TransCode 
     try {
@@ -24,7 +20,6 @@ export function IFrameProvider({ children }) {
         load_func(transcode);
     }
     catch (e) {
-      console.log('use',e.message);
       ErrorComponent(e.message);
     }
   }, [code]);
@@ -32,7 +27,6 @@ export function IFrameProvider({ children }) {
 
   useEffect(() => { // Catch Javascript Error
     switch (state.name) {
-
       case 'error':
         ErrorComponent(state.msg);
         break;
@@ -52,7 +46,7 @@ export function IFrameProvider({ children }) {
     };
   }, []);
 
-  const provider = { code, SetCode, state,_import,SetImport};
+  const provider = { code, SetCode, state ,includes,SetIncludes};
   return (
     <IFrameContext.Provider value={provider}>
       {children}

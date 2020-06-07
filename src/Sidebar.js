@@ -66,13 +66,14 @@ function Loader({ placeholder, callback, item, onItemClick }) {
 
 const Logo = styled.div`
 margin-top: 10px;
-font-size: 14px;
+font-size: 16px;
 font-weight: bold;
 border-bottom: 1px solid grey;
 `;
 
 export function Sidebar({ modules, SetModule, css, SetCSS }) {
     const IframeData = useContext(IFrameContext);
+
     useEffect(() => {
 
         if (IframeData.state.name === 'load_error') {
@@ -86,7 +87,9 @@ export function Sidebar({ modules, SetModule, css, SetCSS }) {
     return (
         <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
             <Logo>
-                <a style={{ color: 'black' }} href="https://github.com/gron1gh1/react-iframe-for-playground" target="_blank"><GithubOutlined /> react-iframe-for-playground</a>
+                <a style={{ color: 'black' }} href="https://github.com/gron1gh1/react-iframe-for-playground" target="_blank">
+                    <GithubOutlined /> react-playground-iframe
+                </a>
             </Logo>
             <Loader placeholder="Input NPM Module Name"
                 callback={(Text) => {

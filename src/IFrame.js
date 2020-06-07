@@ -76,7 +76,6 @@ const SandBox_Html = `
         }
         finally {
           jsx_reload('');
-          console.log('final',window.App);
           if(window.App !== undefined)
           {
             ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
