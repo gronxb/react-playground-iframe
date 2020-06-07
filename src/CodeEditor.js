@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import {  IFrameContext } from './IFrameProvider';
 import Editor from 'react-simple-code-editor';
-import { transform } from 'buble';
+
 import {ErrorComponent} from './ErrorComponent';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import '../node_modules/prismjs/components/prism-clike';
@@ -17,13 +17,10 @@ export function CodeEditor({InitCode}) {
     }
   
     useEffect(() => { // Step 1. Code To TransCode 
-      try {
-        let transcode = transform(Code).code;
-        IframeData.SetCode(transcode);
-      }
-      catch (e) {
-        ErrorComponent(e.message);
-      }
+      let _import = Code.split('\n').filter((line) => line.indexOf('import') !== -1).join('\n');
+     // console.log(_import);
+      IframeData.SetCode(Code);
+      IframeData.SetImport(_import);
     }, [Code]);
   
    

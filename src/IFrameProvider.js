@@ -1,5 +1,7 @@
 import React, { useState, createContext, useEffect } from 'react';
 import { ErrorComponent } from './ErrorComponent';
+import { transform } from 'buble';
+
 export const IFrameContext = createContext();
 
 export function IFrameProvider({ children }) {
@@ -7,18 +9,27 @@ export function IFrameProvider({ children }) {
 
   const [code, SetCode] = useState('');
   const [state, SetState] = useState({ name: 'init', msg: '' });
-  useEffect(() => { // Step 2. TransCode in blobHTML 
-    let load_func = document.getElementById('frame').contentWindow.jsx_reload;
-    if (load_func) {
-      try {
-        load_func(code);
-      }
-      catch (e) {
-      }
+  const [_import,SetImport] = useState([]);
+
+  useEffect(() => {
+    console.log(_import);
+  }, [_import]);
+
+  useEffect(() => { // Code To TransCode 
+    try {
+      let transcode = transform(code,{transforms:{moduleImport: false}}).code;
+      let load_func = document.getElementById('frame').contentWindow.jsx_reload;
+      if(load_func)
+        load_func(transcode);
+    }
+    catch (e) {
+      console.log('use',e.message);
+      ErrorComponent(e.message);
     }
   }, [code]);
 
-  useEffect(() => {
+
+  useEffect(() => { // Catch Javascript Error
     switch (state.name) {
       case 'error':
         ErrorComponent(state.msg);
@@ -26,7 +37,7 @@ export function IFrameProvider({ children }) {
     }
   }, [state]);
 
-  useEffect(() => {
+  useEffect(() => { // IFrame <=> Parent Message 
     window.onmessage = (e) => {
       if (typeof e.data === 'string')
         if (e.data.indexOf(':') !== -1)
@@ -39,7 +50,7 @@ export function IFrameProvider({ children }) {
     };
   }, []);
 
-  const provider = { code, SetCode, state};
+  const provider = { code, SetCode, state,_import,SetImport};
   return (
     <IFrameContext.Provider value={provider}>
       {children}

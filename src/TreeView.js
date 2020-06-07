@@ -1,6 +1,6 @@
-import React, { useState, useContext, useMemo, useEffect } from 'react';
+import React, { useState, useContext, useMemo, useEffect, useCallback } from 'react';
 import { Tree, Input } from 'antd';
-import {IFrameContext } from './IFrameProvider';
+import { IFrameContext } from './IFrameProvider';
 const { Search } = Input;
 
 const dataList = [];
@@ -41,36 +41,33 @@ function getNpmData(modules)// ImportNPM to Tree Data
             children: Object.keys(v.module).map(m => {
                 return {
                     title: m,
-                    key: v.name + '-' + m,
+                    key: v.name + '/' + m,
                 }
             })
         }
     });
-    console.log('treeData', treeData);
     return treeData;
 }
 
 function ImportNPM(modules) { // Import NPM Module imported within <iframe>
-    
+
     return modules.map((m) => {
-        let module = document.getElementById('frame').contentWindow[m.split('@')[0].replace(/-/g,"_")];
-        if(module !== undefined)
-        {
-            return  {
+        let module = document.getElementById('frame').contentWindow[m.split('@')[0].replace(/-/g, "_")];
+        if (module !== undefined) {
+            return {
                 name: m,
                 module: module
             }
         }
         else return null;
-    }).filter((v) => v !== null);
+    });
 }
-export function SearchTree({modules}) {
+export function SearchTree({ modules }) {
     const IframeData = useContext(IFrameContext);
     const [expandedKeys, SetExpandedKeys] = useState(['NPM Module']);
     const [searchValue, SetSearchValue] = useState('');
     const [checkedKeys, SetCheckedKeys] = useState([]);
     const [autoExpandParent, SetAutoExpandParent] = useState(true);
-    const [selectedKeys, SetSelectedKeys] = useState([]);
     const [Data, SetData] = useState([{
         title: 'NPM Module',
         key: 'NPM Module',
@@ -101,8 +98,8 @@ export function SearchTree({modules}) {
         SetAutoExpandParent(true);
     };
 
-    const loop = data =>
-        data.map(item => {
+    const loop = useCallback((data) => {
+        return data.map((item) => {
             const index = item.title.indexOf(searchValue);
             const beforeStr = item.title.substr(0, index);
             const afterStr = item.title.substr(index + searchValue.length);
@@ -125,22 +122,18 @@ export function SearchTree({modules}) {
                 key: item.key,
             };
         });
+}, [Data, searchValue]);
 
-    const onSelect = (selectedKeys, info) => {
-        SetSelectedKeys(selectedKeys);
-    };
-
-    useEffect(()=>{
-        if(IframeData.state.name === 'load_end')
-        {
+    useEffect(() => {
+        if (IframeData.state.name === 'load_end') {
             SetData([{
                 title: 'NPM Module',
                 key: 'NPM Module',
-                children: getNpmData(modules),
+                children: getNpmData(['React','ReactDOM',...modules]),
             }]);
         }
-       
-    },[IframeData.state]);
+
+    }, [IframeData.state]);
 
     const onCheck = checkedKeys => {
         console.log('onCheck', checkedKeys);
@@ -152,13 +145,10 @@ export function SearchTree({modules}) {
             <Search style={{ marginBottom: 8 }} placeholder="Imported NPM module Finder" onChange={onChange} />
             <Tree
                 checkable
-                
                 onExpand={onExpand}
                 expandedKeys={expandedKeys}
                 autoExpandParent={autoExpandParent}
                 treeData={loop(Data)}
-                selectedKeys={selectedKeys}
-                onSelect={onSelect}
                 onCheck={onCheck}
                 checkedKeys={checkedKeys}
             />
