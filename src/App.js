@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import { transform } from 'buble';
 import { Row, Col } from 'antd';
 
@@ -27,6 +27,9 @@ function App() {
   `
   const [modules, SetModule] = useState(['antd']);
   const [css, SetCSS] = useState(['https://unpkg.com/antd@4.2.5/dist/antd.css']);
+  useEffect(()=>{
+      console.log(modules);
+  },[modules]);
 
   return (
     <IFrameProvider>

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { MinusSquareOutlined, GithubOutlined } from '@ant-design/icons';
 import { SearchTree } from './TreeView';
 import { Input, message } from 'antd';
@@ -35,6 +35,9 @@ function Loader({ placeholder, callback, item, onItemClick }) {
         SetText('');
         callback(Text);
     }
+    useEffect(() => {
+       console.log('item',item);
+    }, [item]);
 
     useEffect(() => {
         if (IframeData.state.name === 'load_start') {
@@ -48,15 +51,17 @@ function Loader({ placeholder, callback, item, onItemClick }) {
     function onChange(e) {
         SetText(e.target.value);
     }
-    return (
-        <div style={{ marginTop: '20px', marginBottom: '10px', paddingBottom: '10px', display: 'flex', flexDirection: 'column', borderBottom: '1px solid lightgrey' }}>
-            <Input style={{ marginBottom: '10px' }} placeholder={placeholder} onPressEnter={onEnter} onChange={onChange} value={Text} />
-            {item.map((v, i) =>
-                <Item onClick={() => onItemClick(v)} key={i}><ItemIcon />{v}</Item>
-            )}
-        </div>
-
-    )
+    return useMemo(() =>{
+        return (
+            <div style={{ marginTop: '20px', marginBottom: '10px', paddingBottom: '10px', display: 'flex', flexDirection: 'column', borderBottom: '1px solid lightgrey' }}>
+                <Input style={{ marginBottom: '10px' }} placeholder={placeholder} onPressEnter={onEnter} onChange={onChange} value={Text} />
+                {item.map((v, i) =>
+                    <Item onClick={() => onItemClick(v)} key={i}><ItemIcon />{v}</Item>
+                )}
+            </div>
+        )
+    },[Text,item]);
+  
 }
 
 const Logo = styled.div`

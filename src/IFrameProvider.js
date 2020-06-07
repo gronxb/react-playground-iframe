@@ -39,7 +39,7 @@ export function IFrameProvider({ children }) {
     };
   }, []);
 
-  const provider = { code, SetCode, state };
+  const provider = { code, SetCode, state};
   return (
     <IFrameContext.Provider value={provider}>
       {children}

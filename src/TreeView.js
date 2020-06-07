@@ -53,7 +53,7 @@ function getNpmData(modules)// ImportNPM to Tree Data
 function ImportNPM(modules) { // Import NPM Module imported within <iframe>
     
     return modules.map((m) => {
-        let module = document.getElementById('frame').contentWindow[m.replace(/-/g, "")];
+        let module = document.getElementById('frame').contentWindow[m.split('@')[0].replace(/-/g,"_")];
         if(module !== undefined)
         {
             return  {

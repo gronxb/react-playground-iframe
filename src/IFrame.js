@@ -43,7 +43,7 @@ const SandBox_Html = `
       }
 
       window.prev_libs = npm_libs;
-      let npm_string = npm_libs.map((v) => \`const {default: \${v.replace(/-/g,"")}} = await import('https://dev.jspm.io/\${v}');window.\${v.replace(/-/g,"")} = \${v.replace(/-/g,"")};\`).join('\\n');
+      let npm_string = npm_libs.map((v,i) => \`const {default: _default_\${i}} = await import('https://dev.jspm.io/\${v}');window.\${v.split('@')[0].replace(/-/g,"_")} = _default_\${i};\`).join('\\n');
       
       let scriptTag = document.createElement('script');
       scriptTag.setAttribute('id','module');
