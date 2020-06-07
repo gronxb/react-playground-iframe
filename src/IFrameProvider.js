@@ -17,7 +17,8 @@ export function IFrameProvider({ children }) {
 
   useEffect(() => { // Code To TransCode 
     try {
-      let transcode = transform(code,{transforms:{moduleImport: false}}).code;
+      let transcode = transform(code,{transforms:{moduleImport: false,letConst:false,destructuring:false}}).code;
+      console.log(transcode);
       let load_func = document.getElementById('frame').contentWindow.jsx_reload;
       if(load_func)
         load_func(transcode);

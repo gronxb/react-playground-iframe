@@ -91,15 +91,18 @@ const SandBox_Html = `
     {
         let scriptTag = document.createElement('script');
         scriptTag.setAttribute('id','jsx');
-        scriptTag.textContent  = code;
+        scriptTag.textContent  = \`{
+          \${code}
+          if(window.ReactDOM !== undefined)
+            ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+        }\`;
         
         let jsx = document.getElementById('jsx');
         let head = document.getElementsByTagName('head')[0];
         jsx && head.removeChild(document.getElementById('jsx'));
         head.appendChild(scriptTag);
 
-        if(window.ReactDOM !== undefined)
-          ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
+      //  
     }
     
 
