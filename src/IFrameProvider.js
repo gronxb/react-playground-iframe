@@ -6,11 +6,10 @@ export const IFrameContext = createContext();
 
 export function IFrameProvider({ children }) {
 
-
   const [code, SetCode] = useState('');
   const [state, SetState] = useState({ name: 'init', msg: '' });
   const [includes,SetIncludes] = useState([]); 
-
+  const [module,SetModule] = useState([]);
   useEffect(() => { // Code To TransCode 
     try {
       let transcode = transform(code,{transforms:{moduleImport: false,letConst:false,destructuring:false}}).code;
@@ -46,7 +45,7 @@ export function IFrameProvider({ children }) {
     };
   }, []);
 
-  const provider = { code, SetCode, state ,includes,SetIncludes};
+  const provider = { code, SetCode, state ,includes,SetIncludes,module,SetModule};
   return (
     <IFrameContext.Provider value={provider}>
       {children}

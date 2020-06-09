@@ -1,13 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import 'antd/dist/antd.css';
-import App from './App';
+﻿import {CodeEditor} from './CodeEditor'
+import {IFrame } from './IFrame'
+import {IFrameProvider } from './IFrameProvider'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
+export {CodeEditor,IFrame,IFrameProvider};
