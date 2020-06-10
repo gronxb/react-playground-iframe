@@ -1,6 +1,6 @@
 import React, { useState, useContext, useMemo, useEffect, useCallback } from 'react';
 import { Tree, Input } from 'antd';
-import { IFrameContext } from './IFrameProvider';
+import { IFrameContext } from 'react-playground-iframe';
 const { Search } = Input;
 
 const dataList = [];

@@ -1,9 +1,13 @@
 {
   "name": "react-playground-iframe",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Rendering the react component to the <iframe>",
   "keywords": ["react-playground-iframe","react-playground","playground","react-sandbox","sandbox"],
-  "author": "gron1gh1",
+  "author": {
+    "name":"gron1gh1",
+    "email":"gron1gh1@gmail.com",
+    "url":"https://github.com/gron1gh1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gron1gh1/react-playground-iframe.git"
@@ -12,7 +16,6 @@
     "buble": "^0.20.0",
     "prismjs": "^1.20.0",
     "react": "^16.13.1",
-    "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "react-simple-code-editor": "^0.11.0"
@@ -32,7 +35,7 @@
       "build": "babel src -w -d lib"
   },
   "main": "lib/index.js",
-  "license": "ISC",
+  "license": "BSD",
   "bugs": {
     "url": "https://github.com/gron1gh1/react-playground-iframe/issues"
   },

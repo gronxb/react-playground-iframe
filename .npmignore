@@ -6,11 +6,11 @@ demo
 .babelrc
 src
 .gitignore
-README.node_modules
+.npmignore
+README.md
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 # GIT
 .git
-

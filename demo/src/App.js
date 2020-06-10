@@ -1,16 +1,18 @@
 import React, { useState ,useEffect} from 'react';
-import { transform } from 'buble';
 import { Row, Col } from 'antd';
 
 import "./style.css";
 
-import { IFrameProvider } from './IFrameProvider';
-import { IFrame } from './IFrame';
-import { CodeEditor } from './CodeEditor';
+import {IFrameProvider,IFrame,CodeEditor} from 'react-playground-iframe';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Sidebar } from './Sidebar';
+import styled from 'styled-components';
 
+const StyledIFrame = styled(IFrame)`
+  width:50%;
+  cursor:pointer;
+`
 function App() {
 
   const InitCode = `const {Button} = antd;
@@ -49,7 +51,7 @@ function App()
             <div style={{ width: '50%' }}>
               <CodeEditor InitCode={InitCode}/>
             </div>
-            <IFrame initcode={InitCode} lib={modules} css={css} />
+            <StyledIFrame InitCode={InitCode} LoadModule={modules} LoadCSS={css} width="50%" />
           </div>
 
         </Col>

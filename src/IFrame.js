@@ -210,7 +210,7 @@ function createBlobUrl(html){
     return URL.createObjectURL(blob);
 };
 
-export const IFrame = memo(function IFrame({ InitCode, LoadModule,LoadCSS}) {
+export const IFrame = memo(function IFrame({ InitCode, LoadModule,LoadCSS,width,height}) {
     const [load,SetLoad] = useState(false);
 
     const ref = useRef();
@@ -233,7 +233,7 @@ export const IFrame = memo(function IFrame({ InitCode, LoadModule,LoadCSS}) {
     },[LoadCSS]);
 
     return useMemo(() => {
-      return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{border: '1px solid lightgray',background:'white'}} src={createBlobUrl(SandBox_Html)} />
+      return (<iframe id='frame' ref={ref} onLoad={onLoad} style={{width,height,border: '1px solid lightgray',background:'white'}} src={createBlobUrl(SandBox_Html)} />
       )
     }, []) // First rendered, prevent re-rendering
   });

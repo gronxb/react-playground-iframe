@@ -4,7 +4,7 @@ import { SearchTree } from './TreeView';
 import { Input, message } from 'antd';
 
 import styled from "styled-components"
-import { IFrameContext } from './IFrameProvider';
+import { IFrameContext } from 'react-playground-iframe';
 const Item = styled.span`
 margin-left: 10px;
 overflow:hidden;
@@ -82,7 +82,7 @@ export function Sidebar({ modules, SetModule, css, SetCSS }) {
         }
 
     }, [IframeData.state]);
-
+    
 
     return (
         <div style={{ paddingLeft: '10px', paddingRight: '20px' }}>
