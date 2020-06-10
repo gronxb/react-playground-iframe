@@ -1,6 +1,6 @@
 {
   "name": "react-playground-iframe",
-  "version": "0.1.6",
+  "version": "0.1.9",
   "description": "Rendering the react component to the <iframe>",
   "keywords": ["react-playground-iframe","react-playground","playground","react-sandbox","sandbox"],
   "author": {
@@ -35,7 +35,7 @@
       "build": "babel src -w -d lib"
   },
   "main": "lib/index.js",
-  "license": "BSD",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/gron1gh1/react-playground-iframe/issues"
   },

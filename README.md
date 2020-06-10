@@ -4,6 +4,8 @@ react-playground-iframe
 [![npm](https://img.shields.io/npm/v/react-playground-iframe.svg?style=flat-square)](https://www.npmjs.com/package/react-playground-iframe)
 <br>Rendering the react component to the &lt;iframe/&gt;
 ## [Demo (Yet Develop)](https://gron1gh1.github.com/react-playground-iframe)
+![Alt Text](https://github.com/gron1gh1/react-playground-iframe/blob/master/preview.gif)
+
 ## Installation
 ```bash
 npm install react-playground-iframe --save

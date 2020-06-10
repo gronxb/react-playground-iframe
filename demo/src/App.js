@@ -9,10 +9,6 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { Sidebar } from './Sidebar';
 import styled from 'styled-components';
 
-const StyledIFrame = styled(IFrame)`
-  width:50%;
-  cursor:pointer;
-`
 function App() {
 
   const InitCode = `const {Button} = antd;
@@ -51,7 +47,7 @@ function App()
             <div style={{ width: '50%' }}>
               <CodeEditor InitCode={InitCode}/>
             </div>
-            <StyledIFrame InitCode={InitCode} LoadModule={modules} LoadCSS={css} width="50%" />
+            <IFrame InitCode={InitCode} LoadModule={modules} LoadCSS={css} width="50%" />
           </div>
 
         </Col>

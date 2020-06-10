@@ -162,9 +162,9 @@ const SandBox_Html = `
       font-size: 10px;
       position: relative;
       text-indent: -9999em;
-      border-top: 0.5em solid rgba(255, 0, 0, 0.2);
-      border-right: 0.5em solid rgba(0, 255, 255, 0.2);
-      border-bottom: 0.5em solid rgba(0, 0, 255, 0.2);
+      border-top: 0.5em solid rgba(24, 144, 255, 0.2);
+      border-right: 0.5em solid rgba(24, 144, 255, 0.2);
+      border-bottom: 0.5em solid rgba(24, 144, 255, 0.2);
       border-left: 0.5em solid white;
       -webkit-transform: translateZ(0);
       -ms-transform: translateZ(0);
