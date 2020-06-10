@@ -17,7 +17,6 @@ import React,{useState} from 'react';
 import {CodeEditor,IFrameProvider,IFrame} from 'react-playground-iframe';
 
 function App() {
-  const [modules, SetModule] = useState(['antd']);
   const InitCode = `const {Button} = antd;
     function App()
     {
