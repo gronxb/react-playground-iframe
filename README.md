@@ -27,7 +27,7 @@ function App() {
       )
     }`;
   return (
-    <div className="App">
+    <div>
       <IFrameProvider>
         <CodeEditor InitCode={InitCode}  />
         <IFrame InitCode={InitCode} LoadModule={['antd']} LoadCSS={['https://unpkg.com/antd@4.2.5/dist/antd.css']} />
