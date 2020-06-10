@@ -16,6 +16,5 @@ yarn-debug.log*
 yarn-error.log*
 
 .babelrc
-.gitignore
 .npmignore
 yarn.lock

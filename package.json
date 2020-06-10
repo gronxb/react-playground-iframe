@@ -2,7 +2,7 @@
   "name": "react-playground-iframe",
   "version": "0.1.5",
   "description": "Rendering the react component to the <iframe>",
-  "keywords": ["react-playground","playground","react-sandbox","sandbox"],
+  "keywords": ["react-playground-iframe","react-playground","playground","react-sandbox","sandbox"],
   "author": "gron1gh1",
   "repository": {
     "type": "git",
