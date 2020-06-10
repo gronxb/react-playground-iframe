@@ -8,6 +8,9 @@ react-playground-iframe
 
 ## Installation
 ```bash
+yarn add react-playground-iframe
+```
+```bash
 npm install react-playground-iframe --save
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "react-playground-iframe",
-  "version": "0.1.9",
+  "version": "0.2.3",
   "description": "Rendering the react component to the <iframe>",
   "keywords": ["react-playground-iframe","react-playground","playground","react-sandbox","sandbox"],
   "author": {
@@ -39,5 +39,5 @@
   "bugs": {
     "url": "https://github.com/gron1gh1/react-playground-iframe/issues"
   },
-  "homepage": "https://github.com/gron1gh1/react-playground-iframe#readme"
+  "homepage": "https://gron1gh1.github.io/react-playground-iframe/"
 }
