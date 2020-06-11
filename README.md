@@ -41,7 +41,20 @@ function App() {
   );
 }
 ```
+## Instead Grammar
+Playground does not support ```import``` grammar.<br>
+And If such as ```-``` is included, it must be replaced with ```_```.
 
+The following should be used:<br>
+```javascript
+import {useState,useEffect} = 'react';
+import {IFrame} = 'react-playground-iframe';
+import {Button} = 'antd';
+//  ↓↓↓↓↓↓↓↓
+const {useState,useEffect} = React;
+const {IFrame} = react_playground_iframe;
+const {Button} = antd;
+```
 
 ## API
 ### &lt;IFrame /&gt; Props
@@ -54,3 +67,31 @@ function App() {
 |Name|Type|Description|
 |---|---|---|
 |InitCode|string|First Render React Code in the `<textarea />`
+### &lt;IFrameProvider /&gt;
+```javascript
+function IFrameEvent()
+{
+  useEffect(() => {
+    switch(IframeData.state)
+    {
+      case 'load_start':
+      console.log('load_start message when <IFrame /> LoadModule Prop is added');
+      break;
+      case 'load_end':
+      console.log('load_end message when <IFrame /> LoadModule Prop Load is ended');
+      break;
+      case 'load_error':
+      console.log('<IFrame /> LoadModule Prop Callup Failed');
+      break;
+    }
+  }, [IframeData.state]);
+}
+
+render() {
+  <IFrameProvider>
+   {/*--- IFrame Component ---*/}
+   {/*--- CodeEditor Component ---*/}
+   <IFrameEvent />
+  </IFrameProvider>
+}
+```
