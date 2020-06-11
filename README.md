@@ -69,8 +69,12 @@ const {Button} = antd;
 |InitCode|string|First Render React Code in the `<textarea />`
 ### &lt;IFrameProvider /&gt;
 ```javascript
+import React, { useContext, useEffect } from 'react';
+import { IFrameContext } from 'react-playground-iframe';
+
 function IFrameEvent()
 {
+  const IframeData = useContext(IFrameContext);
   useEffect(() => {
     switch(IframeData.state)
     {
