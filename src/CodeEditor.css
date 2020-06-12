@@ -1,0 +1,35 @@
+
+  /* App */
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .container__content {
+    width: 440px;
+    max-width: 100%;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .container_editor_area {
+    tab-size: 4ch;
+    max-height: 400px;
+    overflow: auto;
+    margin: 1.67em 0;
+  }
+  
+  .container__editor {
+    font-size: 12px;
+    font-variant-ligatures: common-ligatures;
+    background-color: #fafafa;
+    border-radius: 3px;
+  }
+  
+  .container__editor textarea {
+    outline: 0;
+  }
+  
