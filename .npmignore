@@ -8,6 +8,7 @@ src
 .gitignore
 .npmignore
 README.md
+preview.gif
 
 npm-debug.log*
 yarn-debug.log*
