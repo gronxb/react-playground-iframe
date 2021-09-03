@@ -11,7 +11,7 @@
     "antd": "^4.2.5",
     "axios": "^0.19.2",
     "buble": "^0.20.0",
-    "immer": "^8.0.1",
+    "immer": "^9.0.6",
     "prismjs": "^1.20.0",
     "react": "^16.13.1",
     "react-checkbox-tree": "^1.6.0",
