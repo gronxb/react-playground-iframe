@@ -3,6 +3,7 @@
 # dependencies
 /node_modules
 /demo/node_modules
+/demo/build
 
 # misc
 .DS_Store

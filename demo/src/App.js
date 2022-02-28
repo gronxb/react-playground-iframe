@@ -59,7 +59,13 @@ function App()
           }}
         >
           <div style={{ display: "flex" }}>
-            <div style={{ width: "50%" }}>
+            <div
+              style={{
+                width: "50%",
+                background: "white",
+                border: "1px solid lightgray",
+              }}
+            >
               <CodeEditor InitCode={InitCode} />
             </div>
             <IFrame
