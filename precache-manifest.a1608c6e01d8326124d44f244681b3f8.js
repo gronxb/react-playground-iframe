@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "764d5c4ea22f452f10c19529e4153c10",
+    "revision": "ee46aebc92f0c944c3c39b561d526fca",
     "url": "/react-playground-iframe/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/react-playground-iframe/static/css/2.ad5ce0d4.chunk.css"
   },
   {
-    "revision": "4f853ecf4090fa6451aa",
+    "revision": "4befcca9d66169fcf985",
     "url": "/react-playground-iframe/static/css/main.599b8c53.chunk.css"
   },
   {
@@ -20,8 +20,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/react-playground-iframe/static/js/2.6fac4ffc.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "4f853ecf4090fa6451aa",
-    "url": "/react-playground-iframe/static/js/main.abca4cdc.chunk.js"
+    "revision": "4befcca9d66169fcf985",
+    "url": "/react-playground-iframe/static/js/main.15e2f665.chunk.js"
   },
   {
     "revision": "8bd61f822f85363dc743",
